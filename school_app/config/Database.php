@@ -1,17 +1,17 @@
 <?php
-namespace Config;
+// config/Database.php
 
-use PDO;
-use PDOException;
-
-class Database {
+class Database
+{
+    // Default XAMPP credentials
     private static $host = 'localhost';
     private static $db_name = 'school_app';
     private static $username = 'root';
     private static $password = '';
     private static $connection = null;
 
-    public static function connect() {
+    public static function connect()
+    {
         if (!self::$connection) {
             try {
                 self::$connection = new PDO(
@@ -20,8 +20,9 @@ class Database {
                     self::$password
                 );
                 self::$connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                self::$connection->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
             } catch (PDOException $e) {
-                die("Database connection failed");
+                die("Database connection failed: " . $e->getMessage());
             }
         }
         return self::$connection;

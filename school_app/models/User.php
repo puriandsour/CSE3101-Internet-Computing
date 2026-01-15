@@ -1,22 +1,40 @@
 <?php
-require_once __DIR__ . '/../config/Database.php';
-use Config\Database;
+// models/User.php
+require_once 'models/Model.php';
 
+class User extends Model
+{
 
-class User {
-    public static function findByEmail($email) {
+    // Find user by email
+    public static function findByEmail($email)
+    {
         $db = Database::connect();
-        $stmt = $db->prepare("SELECT * FROM users WHERE email=?");
-        $stmt->execute([$email]);
-        return $stmt->fetch(PDO::FETCH_OBJ);
+        $stmt = $db->prepare("SELECT * FROM users WHERE email = :email LIMIT 1");
+        $stmt->bindParam(':email', $email);
+        $stmt->execute();
+        return $stmt->fetch();
     }
 
-    public function save($data) {
+    // Find user by ID
+    public static function findById($id)
+    {
         $db = Database::connect();
-        $stmt = $db->prepare(
-            "INSERT INTO users (name,email,role,password_hash)
-             VALUES (?,?,?,?)"
-        );
-        return $stmt->execute($data);
+        $stmt = $db->prepare("SELECT * FROM users WHERE id = :id LIMIT 1");
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
+        return $stmt->fetch();
+    }
+
+    // Save/Create a new user
+    // Expects array: [username, email, password_hash, first_name, last_name, is_active]
+    public function save($data)
+    {
+        try {
+            $sql = "INSERT INTO users (username, email, password_hash, first_name, last_name, is_active) VALUES (?, ?, ?, ?, ?, ?)";
+            $stmt = $this->db->prepare($sql);
+            return $stmt->execute($data);
+        } catch (PDOException $e) {
+            return false;
+        }
     }
 }
