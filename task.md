@@ -5,12 +5,12 @@
     - [x] Verify `schema.sql` completeness
     - [x] Create `install.php` for automatic Database creation and schema import
     - [x] Update `README.md` with setup instructions
-    - [ ] **Authentication Core** (Model & Database Configured)
+    - [x] **Authentication Core** (Model & Database Configured)
 
-- [ ] **Authentication & Authorization** <!-- id: 1 -->
-    - [ ] **AuthController**: Test Login with real DB users.
-    - [ ] **Middleware**: Secure routes (e.g., `if (!isset($_SESSION['user_id'])) die('Access Denied');`).
-    - [ ] **Views**: Style `views/auth/login.php`.
+- [x] **Authentication & Authorization** <!-- id: 1 -->
+    - [x] **AuthMiddleware**: Secure routes implemented in `index.php`.
+    - [x] **AuthController**: Login logic with Role fetching.
+    - [x] **Views**: Styled `views/auth/login.php`.
 
 - [ ] **User Management (Office Admin)** <!-- id: 2 -->
     - [ ] **Model**: Add `User::getAll()`, `User::update()`, `User::delete()`.

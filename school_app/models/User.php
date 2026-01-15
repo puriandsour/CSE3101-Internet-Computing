@@ -25,15 +25,30 @@ class User extends Model
         return $stmt->fetch();
     }
 
-    // Save/Create a new user
+    // Save/Create a new user with Role
     // Expects array: [username, email, password_hash, first_name, last_name, is_active]
-    public function save($data)
+    public function save($userData, $roleId)
     {
         try {
+            $this->db->beginTransaction();
+
+            // 1. Insert User
             $sql = "INSERT INTO users (username, email, password_hash, first_name, last_name, is_active) VALUES (?, ?, ?, ?, ?, ?)";
             $stmt = $this->db->prepare($sql);
-            return $stmt->execute($data);
+            $stmt->execute($userData);
+
+            $userId = $this->db->lastInsertId();
+
+            // 2. Assign Role
+            $sqlRole = "INSERT INTO user_roles (user_id, role_id) VALUES (?, ?)";
+            $stmtRole = $this->db->prepare($sqlRole);
+            $stmtRole->execute([$userId, $roleId]);
+
+            $this->db->commit();
+            return true;
         } catch (PDOException $e) {
+            $this->db->rollBack();
+            // Log error
             return false;
         }
     }

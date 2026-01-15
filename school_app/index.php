@@ -1,62 +1,64 @@
 <?php
 session_start();
 
-#CSS pasges link 
-echo "<link rel='stylesheet' href='public/css/style.css'>";
+// Core & Config
+require_once 'config/Database.php';
+require_once 'core/AuthMiddleware.php';
 
-#controllers
+// Controllers
 require_once 'controllers/AuthController.php';
 require_once 'controllers/StudentController.php';
 require_once 'controllers/ScoreController.php';
 require_once 'controllers/ReportController.php';
 
+// Routing
 $c = $_GET['controller'] ?? 'auth';
 $a = $_GET['action'] ?? 'login';
 
-#deals with login, logout, and user creation
+// --- AUTHORIZATION ROUTES ---
+
 if ($c === 'auth') {
     $auth = new AuthController();
 
-    if ($a === 'login' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-        if ($auth->login($_POST['email'], $_POST['password'])) {
-            header("Location:index.php?controller=dashboard");
+    if ($a === 'login') {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if ($auth->login($_POST['email'], $_POST['password'])) {
+                header("Location: index.php?controller=dashboard");
+                exit;
+            } else {
+                $_SESSION['error'] = "Invalid credentials";
+                header("Location: index.php?controller=auth&action=login");
+                exit;
+            }
+        } else {
+            require 'views/auth/login.php';
+        }
+    } elseif ($a === 'logout') {
+        $auth->logout();
+    } elseif ($a === 'create_user') {
+        AuthMiddleware::isAdmin(); // Protect Route
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $auth->createUser($_POST);
+            header("Location: index.php?controller=dashboard"); // Or back to user list
             exit;
         } else {
-            echo "<p class='error'>Login failed</p>";
+            require 'views/auth/create_user.php';
         }
     }
-    elseif ($a === 'logout') {
-        $auth->logout();
-        header("Location:index.php?controller=auth");
-        exit;
-    }
-    elseif ($a === 'createUser' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-        $auth->createUser($_POST);
-        header("Location:index.php?controller=dashboard");
-        exit;
-    }
-    elseif ($a === 'createUserForm') {
-        require 'views/auth/create_user.php';
-    }
-    else {
-        require 'views/auth/login.php';
-    }
 }
 
-#deals with dashboard
+// --- PROTECTED ROUTES (Require Login) ---
 elseif ($c === 'dashboard') {
+    AuthMiddleware::isAuthenticated();
     require 'views/dashboard.php';
-}
-
-#deals with students
-elseif ($c === 'student') {
+} elseif ($c === 'student') {
+    AuthMiddleware::isAdmin(); // Only Admin manages students
     $s = new StudentController();
 
     if ($a === 'add' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-        $success = $s->add($_POST);
-        if ($success) {
+        if ($s->add($_POST)) {
             $_SESSION['success'] = "Student added successfully!";
-            header("Location:index.php?controller=dashboard");
+            header("Location: index.php?controller=dashboard");
             exit;
         } else {
             $_SESSION['error'] = "Error adding student.";
@@ -65,83 +67,41 @@ elseif ($c === 'student') {
     } else {
         require 'views/students/add.php';
     }
-}
-
-#deals with scores
-elseif ($c === 'score') {
+} elseif ($c === 'score') {
+    AuthMiddleware::isTeacher(); // Only Teachers manage scores
     $sc = new ScoreController();
     if ($a === 'add' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         $sc->add($_POST);
         $_SESSION['success'] = "Score added successfully!";
-        header("Location:index.php?controller=dashboard");
+        header("Location: index.php?controller=dashboard");
         exit;
     } else {
         require 'views/scores/add.php';
     }
-}
+} elseif ($c === 'subject' || $c === 'class' || $c === 'schoolYear' || $c === 'term') {
+    AuthMiddleware::isAdmin();
 
-#deals with subjects
-elseif ($c === 'subject' && $_SESSION['role'] === 'admin') {
-    require_once 'controllers/SubjectController.php';
-    $sub = new SubjectController();
-
-    if ($a === 'add' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-        $sub->add($_POST);
-        $_SESSION['success'] = "Subject added successfully!";
-        header("Location:index.php?controller=dashboard");
-        exit;
-    } else {
-        require 'views/subjects/add.php';
-    }
-}
-
-#deals with classes
-elseif ($c === 'class' && $_SESSION['role'] === 'admin') {
-    require_once 'controllers/ClassController.php';
-    $cc = new ClassController();
+    // Dynamic controller loading for Admin CRUDs
+    $controllerName = ucfirst($c) . 'Controller';
+    require_once "controllers/$controllerName.php";
+    $controller = new $controllerName();
 
     if ($a === 'add' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-        $cc->add($_POST);
-        $_SESSION['success'] = "Class added successfully!";
-        header("Location:index.php?controller=dashboard");
+        $controller->add($_POST);
+        $_SESSION['success'] = "$c added successfully!";
+        header("Location: index.php?controller=dashboard");
         exit;
     } else {
-        require 'views/classes/add.php';
+        // e.g. views/subjects/add.php
+        require "views/{$c}s/add.php";
     }
-}
+} elseif ($c === 'report') {
+    AuthMiddleware::isAuthenticated(); // Teacher or Admin can view reports?
+    // Requirements say: Teacher: manage scores, View reports seems implied or explicit?
+    // "Teacher (manage scores only)" - maybe they can't see full reports?
+    // Let's assume Teachers can VIEW reports of their students/subjects.
+    // Office Admin manage all other functionalities.
 
-#deals with school years
-elseif ($c === 'schoolYear') {
-    require_once 'controllers/SchoolYearController.php';
-    $sy = new SchoolYearController();
-
-    if ($a === 'add' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-        $sy->add($_POST);
-        $_SESSION['success'] = "School year added successfully!";
-        header("Location:index.php?controller=dashboard");
-        exit;
-    } else {
-        require 'views/school_years/add.php';
-    }
-}
-
-#deals with terms
-elseif ($c === 'term') {
-    require_once 'controllers/TermController.php';
-    $t = new TermController();
-
-    if ($a === 'add' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-        $t->add($_POST);
-        $_SESSION['success'] = "Term added successfully!";
-        header("Location:index.php?controller=dashboard");
-        exit;
-    } else {
-        require 'views/terms/add.php';
-    }
-}
-
-#deals with reports
-elseif ($c === 'report') {
     $r = new ReportController();
 
     if ($a === 'view' && !empty($_GET['student']) && !empty($_GET['term'])) {
@@ -150,4 +110,7 @@ elseif ($c === 'report') {
     } else {
         require 'views/report/select_student_term.php';
     }
+} else {
+    // 404
+    echo "Page not found.";
 }
