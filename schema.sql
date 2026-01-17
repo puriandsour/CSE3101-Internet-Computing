@@ -110,7 +110,7 @@ CREATE TABLE classes (
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
   PRIMARY KEY (id),
-  UNIQUE KEY uq_classes_name (name),
+  UNIQUE KEY uq_classes_grade_name (grade_id, name),
   KEY idx_classes_grade (grade_id),
   CONSTRAINT fk_classes_grade FOREIGN KEY (grade_id) REFERENCES grades(id) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -203,7 +203,7 @@ CREATE TABLE enrollments (
   student_id BIGINT UNSIGNED NOT NULL,
   class_id BIGINT UNSIGNED NOT NULL,
   school_year_id BIGINT UNSIGNED NOT NULL,
-  enrolled_at DATE NOT NULL,
+  enrolled_at DATE NOT NULL DEFAULT (CURRENT_DATE),
   status ENUM('ACTIVE','COMPLETED','TRANSFERRED','DROPPED') NOT NULL DEFAULT 'ACTIVE',
 
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -302,11 +302,78 @@ INSERT INTO user_roles (user_id, role_id)
 SELECT u.id, r.id FROM users u, roles r 
 WHERE u.username = 'admin' AND r.name = 'OFFICE_ADMIN';
 
--- Teacher User
+-- create the testing account for team entity teacher User
 INSERT INTO users (username, email, password_hash, first_name, last_name) VALUES
 ('teacher', 'teacher@school.com', '$2a$12$uC7c/3/t/ZgCpQJlvY0tNuDWWuUIaEuD.37esw/Lo2Cne1xksgNEG', 'John', 'Doe'); -- same here its password
 
--- Assign TEACHER Role
+-- Assign TEACHER Role to testing account
 INSERT INTO user_roles (user_id, role_id)
 SELECT u.id, r.id FROM users u, roles r 
 WHERE u.username = 'teacher' AND r.name = 'TEACHER';
+
+-- =========================================================
+-- ADDITIONAL SEED DATA FOR DEMO (Matches Image)
+-- =========================================================
+
+-- School Year 2025-2026
+INSERT INTO school_years (name, start_date, end_date, is_current) 
+VALUES ('2025-2026', '2025-09-01', '2026-06-30', 1);
+
+-- Terms
+INSERT INTO terms (school_year_id, term_number, name, start_date, end_date)
+SELECT id, 1, 'Term 1', '2025-09-01', '2025-12-20' FROM school_years WHERE name = '2025-2026';
+INSERT INTO terms (school_year_id, term_number, name, start_date, end_date)
+SELECT id, 2, 'Term 2', '2026-01-05', '2026-03-28' FROM school_years WHERE name = '2025-2026';
+INSERT INTO terms (school_year_id, term_number, name, start_date, end_date)
+SELECT id, 3, 'Term 3', '2026-04-13', '2026-06-30' FROM school_years WHERE name = '2025-2026';
+
+-- Classes A & B for Grades 5, 6, 7, 8
+INSERT INTO classes (name, grade_id, room, is_active) VALUES
+('A', 5, 'Room 5A', 1), ('B', 5, 'Room 5B', 1),
+('A', 6, 'Room 6A', 1), ('B', 6, 'Room 6B', 1);
+
+-- Sample Students from Image
+INSERT INTO students (admission_no, first_name, last_name, is_active) VALUES
+('1001', 'Liam', 'Carter', 1),
+('1002', 'Olivia', 'Bennett', 1),
+('1003', 'Noah', 'Thompson', 1),
+('1004', 'Emma', 'Harper', 1),
+('1005', 'Ethan', 'Parker', 1),
+('1006', 'Ava', 'Mitchell', 1),
+('1007', 'Lucas', 'Foster', 1);
+
+-- Enrollments matching image
+INSERT INTO enrollments (student_id, class_id, school_year_id, enrolled_at, status)
+SELECT s.id, c.id, (SELECT id FROM school_years WHERE name='2025-2026'), '2025-09-01', 'ACTIVE'
+FROM students s, classes c, grades g
+WHERE s.admission_no = '1001' AND c.name = 'A' AND c.grade_id = g.id AND g.grade_number = 5;
+
+INSERT INTO enrollments (student_id, class_id, school_year_id, enrolled_at, status)
+SELECT s.id, c.id, (SELECT id FROM school_years WHERE name='2025-2026'), '2025-09-01', 'ACTIVE'
+FROM students s, classes c, grades g
+WHERE s.admission_no = '1002' AND c.name = 'B' AND c.grade_id = g.id AND g.grade_number = 5;
+
+INSERT INTO enrollments (student_id, class_id, school_year_id, enrolled_at, status)
+SELECT s.id, c.id, (SELECT id FROM school_years WHERE name='2025-2026'), '2025-09-01', 'ACTIVE'
+FROM students s, classes c, grades g
+WHERE s.admission_no = '1003' AND c.name = 'A' AND c.grade_id = g.id AND g.grade_number = 6;
+
+INSERT INTO enrollments (student_id, class_id, school_year_id, enrolled_at, status)
+SELECT s.id, c.id, (SELECT id FROM school_years WHERE name='2025-2026'), '2025-09-01', 'ACTIVE'
+FROM students s, classes c, grades g
+WHERE s.admission_no = '1004' AND c.name = 'B' AND c.grade_id = g.id AND g.grade_number = 6;
+
+INSERT INTO enrollments (student_id, class_id, school_year_id, enrolled_at, status)
+SELECT s.id, c.id, (SELECT id FROM school_years WHERE name='2025-2026'), '2025-09-01', 'ACTIVE'
+FROM students s, classes c, grades g
+WHERE s.admission_no = '1005' AND c.name = 'A' AND c.grade_id = g.id AND g.grade_number = 5;
+
+INSERT INTO enrollments (student_id, class_id, school_year_id, enrolled_at, status)
+SELECT s.id, c.id, (SELECT id FROM school_years WHERE name='2025-2026'), '2025-09-01', 'ACTIVE'
+FROM students s, classes c, grades g
+WHERE s.admission_no = '1006' AND c.name = 'B' AND c.grade_id = g.id AND g.grade_number = 6;
+
+INSERT INTO enrollments (student_id, class_id, school_year_id, enrolled_at, status)
+SELECT s.id, c.id, (SELECT id FROM school_years WHERE name='2025-2026'), '2025-09-01', 'ACTIVE'
+FROM students s, classes c, grades g
+WHERE s.admission_no = '1007' AND c.name = 'A' AND c.grade_id = g.id AND g.grade_number = 6;

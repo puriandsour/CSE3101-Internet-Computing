@@ -74,12 +74,17 @@ if ($role === 'OFFICE_ADMIN') {
                 render_view('views/admin/users/index.php');
             break;
         case 'student':
+            $studentController = new StudentController();
             if ($a === 'add')
-                render_view('views/admin/students/add.php');
+                $studentController->add();
+            elseif ($a === 'create')
+                $studentController->create($_POST);
             elseif ($a === 'enroll')
-                render_view('views/admin/students/enroll.php');
-            else
-                render_view('views/admin/students/index.php');
+                $studentController->enroll();
+            else {
+                $data = $studentController->index();
+                render_view('views/admin/students/index.php', $data);
+            }
             break;
         case 'class':
             render_view('views/admin/academic/classes.php');

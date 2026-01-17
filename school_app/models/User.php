@@ -40,6 +40,15 @@ class User extends Model
             $params[] = $filters['role'];
         }
 
+        if (!empty($filters['search'])) {
+            $searchTerm = "%{$filters['search']}%";
+            $sql .= " AND (u.first_name LIKE ? OR u.last_name LIKE ? OR u.username LIKE ? OR u.email LIKE ?)";
+            $params[] = $searchTerm;
+            $params[] = $searchTerm;
+            $params[] = $searchTerm;
+            $params[] = $searchTerm;
+        }
+
         $sql .= " ORDER BY u.last_name, u.first_name";
 
         $stmt = $db->prepare($sql);
