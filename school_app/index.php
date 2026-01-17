@@ -11,106 +11,141 @@ require_once 'controllers/StudentController.php';
 require_once 'controllers/ScoreController.php';
 require_once 'controllers/ReportController.php';
 
-// Routing
-$c = $_GET['controller'] ?? 'auth';
-$a = $_GET['action'] ?? 'login';
-
-// --- AUTHORIZATION ROUTES ---
-
-if ($c === 'auth') {
-    $auth = new AuthController();
-
-    if ($a === 'login') {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            if ($auth->login($_POST['email'], $_POST['password'])) {
-                header("Location: index.php?controller=dashboard");
-                exit;
-            } else {
-                $_SESSION['error'] = "Invalid credentials";
-                header("Location: index.php?controller=auth&action=login");
-                exit;
-            }
-        } else {
-            require 'views/auth/login.php';
-        }
-    } elseif ($a === 'logout') {
-        $auth->logout();
-    } elseif ($a === 'create_user') {
-        AuthMiddleware::isAdmin(); // Protect Route
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $auth->createUser($_POST);
-            header("Location: index.php?controller=dashboard"); // Or back to user list
-            exit;
-        } else {
-            require 'views/auth/create_user.php';
-        }
-    }
+// --- VIEW HELPER ---
+function render_view($viewPath, $data = [])
+{
+    extract($data);
+    require 'views/layout/header.php';
+    require $viewPath;
+    require 'views/layout/footer.php';
 }
 
-// --- PROTECTED ROUTES (Require Login) ---
-elseif ($c === 'dashboard') {
-    AuthMiddleware::isAuthenticated();
-    require 'views/dashboard.php';
-} elseif ($c === 'student') {
-    AuthMiddleware::isAdmin(); // Only Admin manages students
-    $s = new StudentController();
+// --- ROUTING LOGIC ---
+$c = $_GET['controller'] ?? null;
+$a = $_GET['action'] ?? 'index';
 
-    if ($a === 'add' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-        if ($s->add($_POST)) {
-            $_SESSION['success'] = "Student added successfully!";
-            header("Location: index.php?controller=dashboard");
-            exit;
-        } else {
-            $_SESSION['error'] = "Error adding student.";
-            require 'views/students/add.php';
+// 1. Handle Unauthenticated Users
+if (!isset($_SESSION['user_id'])) {
+    if ($c === 'auth' && $a === 'login') {
+        $auth = new AuthController();
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if ($auth->login($_POST['email'], $_POST['password'])) {
+                header("Location: index.php");
+                exit;
+            } else {
+                $_SESSION['error'] = "Invalid email or password.";
+                header("Location: index.php");
+                exit;
+            }
         }
-    } else {
-        require 'views/students/add.php';
-    }
-} elseif ($c === 'score') {
-    AuthMiddleware::isTeacher(); // Only Teachers manage scores
-    $sc = new ScoreController();
-    if ($a === 'add' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-        $sc->add($_POST);
-        $_SESSION['success'] = "Score added successfully!";
-        header("Location: index.php?controller=dashboard");
+        require 'views/auth/login.php';
         exit;
-    } else {
-        require 'views/scores/add.php';
     }
-} elseif ($c === 'subject' || $c === 'class' || $c === 'schoolYear' || $c === 'term') {
-    AuthMiddleware::isAdmin();
+    require 'views/auth/login.php';
+    exit;
+}
 
-    // Dynamic controller loading for Admin CRUDs
-    $controllerName = ucfirst($c) . 'Controller';
-    require_once "controllers/$controllerName.php";
-    $controller = new $controllerName();
+// 2. Handle Authenticated Users
+$role = $_SESSION['role'];
 
-    if ($a === 'add' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-        $controller->add($_POST);
-        $_SESSION['success'] = "$c added successfully!";
-        header("Location: index.php?controller=dashboard");
-        exit;
-    } else {
-        // e.g. views/subjects/add.php
-        require "views/{$c}s/add.php";
+if ($c === null) {
+    if ($role === 'OFFICE_ADMIN')
+        header("Location: index.php?controller=admin&action=dashboard");
+    else
+        header("Location: index.php?controller=teacher&action=dashboard");
+    exit;
+}
+
+if ($c === 'auth' && $a === 'logout') {
+    (new AuthController())->logout();
+}
+
+// 3. Role-Based Routing
+if ($role === 'OFFICE_ADMIN') {
+    switch ($c) {
+        case 'admin':
+            if ($a === 'dashboard')
+                render_view('views/admin/dashboard.php');
+            break;
+        case 'user':
+            if ($a === 'add')
+                render_view('views/admin/users/add.php');
+            else
+                render_view('views/admin/users/index.php');
+            break;
+        case 'student':
+            if ($a === 'add')
+                render_view('views/admin/students/add.php');
+            elseif ($a === 'enroll')
+                render_view('views/admin/students/enroll.php');
+            else
+                render_view('views/admin/students/index.php');
+            break;
+        case 'class':
+            render_view('views/admin/academic/classes.php');
+            break;
+        case 'subject':
+            render_view('views/admin/academic/subjects.php');
+            break;
+        case 'schoolYear':
+            render_view('views/admin/academic/schoolYears.php');
+            break;
+        case 'term':
+            render_view('views/admin/academic/terms.php');
+            break;
+        case 'settings':
+            render_view('views/shared/settings.php');
+            break;
+        case 'quickactions':
+            render_view('views/admin/quickActions.php');
+            break;
+        case 'profile':
+            render_view('views/shared/profile.php');
+            break;
+        case 'notifications':
+            render_view('views/shared/notifications.php');
+            break;
+        case 'help':
+            render_view('views/shared/help.php');
+            break;
+        default:
+            render_view('views/shared/404.php');
+            break;
     }
-} elseif ($c === 'report') {
-    AuthMiddleware::isAuthenticated(); // Teacher or Admin can view reports?
-    // Requirements say: Teacher: manage scores, View reports seems implied or explicit?
-    // "Teacher (manage scores only)" - maybe they can't see full reports?
-    // Let's assume Teachers can VIEW reports of their students/subjects.
-    // Office Admin manage all other functionalities.
-
-    $r = new ReportController();
-
-    if ($a === 'view' && !empty($_GET['student']) && !empty($_GET['term'])) {
-        $data = $r->studentReport($_GET['student'], $_GET['term']);
-        require 'views/report/report_card.php';
-    } else {
-        require 'views/report/select_student_term.php';
+} elseif ($role === 'TEACHER') {
+    switch ($c) {
+        case 'teacher':
+            if ($a === 'dashboard')
+                render_view('views/teacher/dashboard.php');
+            elseif ($a === 'classes')
+                render_view('views/teacher/classes.php');
+            break;
+        case 'score':
+            if ($a === 'enter')
+                render_view('views/teacher/scores/enter.php');
+            break;
+        case 'report':
+            if ($a === 'index')
+                render_view('views/teacher/reports/index.php');
+            elseif ($a === 'generate')
+                render_view('views/teacher/reports/generate.php');
+            break;
+        case 'profile':
+            render_view('views/shared/profile.php');
+            break;
+        case 'notifications':
+            render_view('views/shared/notifications.php');
+            break;
+        case "quickactions":
+            render_view('views/teacher/quickActions.php');
+            break;
+        case 'help':
+            render_view('views/shared/help.php');
+            break;
+        default:
+            render_view('views/shared/404.php');
+            break;
     }
 } else {
-    // 404
-    echo "Page not found.";
+    render_view('views/shared/403.php');
 }

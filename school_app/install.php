@@ -6,7 +6,7 @@
 
 $host = 'localhost';
 $username = 'root';
-$password = ''; // Default XAMPP password
+$password = 'password'; // Default XAMPP password
 $dbname = 'school_app';
 
 echo "<h1>School Management System Installation</h1>";
@@ -36,10 +36,10 @@ try {
     // 5. Execute Schema (Split by semicolon to handle multiple statements if needed, 
     // but PDO can sometimes handle it in one go depending on driver. 
     // Safer to just run it generically or let PDO handle multiple statements if emulated prepares are on)
-    
+
     // Enabling multiple statements
     $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, 1);
-    
+
     $pdo->exec($sql);
 
     echo "<p style='color:green'><strong>Success!</strong> Database schema imported.</p>";

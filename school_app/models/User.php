@@ -17,7 +17,7 @@ class User extends Model
     public static function getAll($filters = [])
     {
         $db = Database::connect();
-        
+
         $sql = "SELECT 
                     u.*,
                     r.id as role_id,
@@ -27,21 +27,21 @@ class User extends Model
                 LEFT JOIN user_roles ur ON u.id = ur.user_id
                 LEFT JOIN roles r ON ur.role_id = r.id
                 WHERE 1=1";
-        
+
         $params = [];
-        
+
         if (isset($filters['is_active'])) {
             $sql .= " AND u.is_active = ?";
             $params[] = $filters['is_active'];
         }
-        
+
         if (!empty($filters['role'])) {
             $sql .= " AND r.name = ?";
             $params[] = $filters['role'];
         }
-        
+
         $sql .= " ORDER BY u.last_name, u.first_name";
-        
+
         $stmt = $db->prepare($sql);
         $stmt->execute($params);
         return $stmt->fetchAll(PDO::FETCH_OBJ);
@@ -98,13 +98,13 @@ class User extends Model
     public static function getUsersWithRole($roleId)
     {
         $db = Database::connect();
-        
+
         $sql = "SELECT u.*
                 FROM users u
                 JOIN user_roles ur ON u.id = ur.user_id
                 WHERE ur.role_id = ? AND u.is_active = 1
                 ORDER BY u.last_name, u.first_name";
-        
+
         $stmt = $db->prepare($sql);
         $stmt->execute([$roleId]);
         return $stmt->fetchAll(PDO::FETCH_OBJ);
@@ -122,7 +122,7 @@ class User extends Model
                 FROM roles r
                 JOIN user_roles ur ON r.id = ur.role_id
                 WHERE ur.user_id = ?";
-        
+
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$userId]);
         return $stmt->fetchAll(PDO::FETCH_OBJ);
@@ -141,7 +141,7 @@ class User extends Model
                 JOIN role_permissions rp ON p.id = rp.permission_id
                 JOIN user_roles ur ON rp.role_id = ur.role_id
                 WHERE ur.user_id = ?";
-        
+
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$userId]);
         return $stmt->fetchAll(PDO::FETCH_OBJ);
@@ -161,11 +161,11 @@ class User extends Model
                 JOIN role_permissions rp ON p.id = rp.permission_id
                 JOIN user_roles ur ON rp.role_id = ur.role_id
                 WHERE ur.user_id = ? AND p.code = ?";
-        
+
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$userId, $permissionCode]);
         $result = $stmt->fetch(PDO::FETCH_OBJ);
-        
+
         return $result->count > 0;
     }
 
@@ -190,7 +190,7 @@ class User extends Model
                 $_SESSION['error'] = $validation;
                 return false;
             }
-            
+
             $this->db->beginTransaction();
 
             // 1. Insert User
@@ -208,10 +208,10 @@ class User extends Model
 
             $this->db->commit();
             return $userId;
-            
+
         } catch (PDOException $e) {
             $this->db->rollBack();
-            
+
             // Check for unique constraint violation
             if ($e->getCode() == 23000) {
                 $_SESSION['error'] = "Username or email already exists.";
@@ -238,7 +238,7 @@ class User extends Model
         try {
             $updates = [];
             $params = [];
-            
+
             if (isset($userData['username'])) {
                 if ($this->usernameExists($userData['username'], $userId)) {
                     $_SESSION['error'] = "Username already exists.";
@@ -247,7 +247,7 @@ class User extends Model
                 $updates[] = "username = ?";
                 $params[] = $userData['username'];
             }
-            
+
             if (isset($userData['email'])) {
                 if ($this->emailExists($userData['email'], $userId)) {
                     $_SESSION['error'] = "Email already exists.";
@@ -256,33 +256,33 @@ class User extends Model
                 $updates[] = "email = ?";
                 $params[] = $userData['email'];
             }
-            
+
             if (isset($userData['first_name'])) {
                 $updates[] = "first_name = ?";
                 $params[] = $userData['first_name'];
             }
-            
+
             if (isset($userData['last_name'])) {
                 $updates[] = "last_name = ?";
                 $params[] = $userData['last_name'];
             }
-            
+
             if (isset($userData['is_active'])) {
                 $updates[] = "is_active = ?";
                 $params[] = $userData['is_active'];
             }
-            
+
             if (empty($updates)) {
                 return false;
             }
-            
+
             $params[] = $userId;
-            
+
             $sql = "UPDATE users SET " . implode(', ', $updates) . " WHERE id = ?";
-            
+
             $stmt = $this->db->prepare($sql);
             return $stmt->execute($params);
-            
+
         } catch (PDOException $e) {
             $_SESSION['error'] = "Error updating user: " . $e->getMessage();
             return false;
@@ -300,12 +300,12 @@ class User extends Model
     {
         try {
             $passwordHash = password_hash($newPassword, PASSWORD_DEFAULT);
-            
+
             $sql = "UPDATE users SET password_hash = ? WHERE id = ?";
             $stmt = $this->db->prepare($sql);
-            
+
             return $stmt->execute([$passwordHash, $userId]);
-            
+
         } catch (PDOException $e) {
             $_SESSION['error'] = "Error updating password: " . $e->getMessage();
             return false;
@@ -327,17 +327,17 @@ class User extends Model
             $checkStmt = $this->db->prepare($checkSql);
             $checkStmt->execute([$userId, $roleId]);
             $exists = $checkStmt->fetch(PDO::FETCH_OBJ);
-            
+
             if ($exists->count > 0) {
                 $_SESSION['error'] = "User already has this role.";
                 return false;
             }
-            
+
             $sql = "INSERT INTO user_roles (user_id, role_id) VALUES (?, ?)";
             $stmt = $this->db->prepare($sql);
-            
+
             return $stmt->execute([$userId, $roleId]);
-            
+
         } catch (PDOException $e) {
             $_SESSION['error'] = "Error assigning role: " . $e->getMessage();
             return false;
@@ -356,11 +356,43 @@ class User extends Model
         try {
             $sql = "DELETE FROM user_roles WHERE user_id = ? AND role_id = ?";
             $stmt = $this->db->prepare($sql);
-            
+
             return $stmt->execute([$userId, $roleId]);
-            
+
         } catch (PDOException $e) {
             $_SESSION['error'] = "Error removing role: " . $e->getMessage();
+            return false;
+        }
+    }
+
+    /**
+     * Update user's primary role
+     * 
+     * @param int $userId User ID
+     * @param int $roleId New Role ID
+     * @return bool Success status
+     */
+    public function updateRole($userId, $roleId)
+    {
+        try {
+            $this->db->beginTransaction();
+
+            // 1. Delete existing roles (assuming 1-role per user for simplicity)
+            $sqlDelete = "DELETE FROM user_roles WHERE user_id = ?";
+            $stmtDelete = $this->db->prepare($sqlDelete);
+            $stmtDelete->execute([$userId]);
+
+            // 2. Assign new role
+            $sqlInsert = "INSERT INTO user_roles (user_id, role_id) VALUES (?, ?)";
+            $stmtInsert = $this->db->prepare($sqlInsert);
+            $stmtInsert->execute([$userId, $roleId]);
+
+            $this->db->commit();
+            return true;
+
+        } catch (PDOException $e) {
+            $this->db->rollBack();
+            $_SESSION['error'] = "Error updating user role: " . $e->getMessage();
             return false;
         }
     }
@@ -376,9 +408,9 @@ class User extends Model
         try {
             $sql = "UPDATE users SET is_active = NOT is_active WHERE id = ?";
             $stmt = $this->db->prepare($sql);
-            
+
             return $stmt->execute([$userId]);
-            
+
         } catch (PDOException $e) {
             $_SESSION['error'] = "Error toggling user status: " . $e->getMessage();
             return false;
@@ -402,18 +434,18 @@ class User extends Model
             $scoreStmt = $this->db->prepare("SELECT COUNT(*) as count FROM scores WHERE teacher_user_id = ?");
             $scoreStmt->execute([$userId]);
             $scoreCount = $scoreStmt->fetch(PDO::FETCH_OBJ);
-            
+
             if ($scoreCount->count > 0) {
                 $_SESSION['error'] = "Cannot delete user who has recorded scores. Consider deactivating instead.";
                 return false;
             }
-            
+
             // Soft delete
             $sql = "UPDATE users SET is_active = 0 WHERE id = ?";
             $stmt = $this->db->prepare($sql);
-            
+
             return $stmt->execute([$userId]);
-            
+
         } catch (PDOException $e) {
             $_SESSION['error'] = "Error deleting user: " . $e->getMessage();
             return false;
@@ -435,23 +467,23 @@ class User extends Model
         if (empty($data[0]) || strlen($data[0]) < 3) { // username
             return "Username is required (minimum 3 characters).";
         }
-        
+
         if (empty($data[1]) || !filter_var($data[1], FILTER_VALIDATE_EMAIL)) { // email
             return "Valid email is required.";
         }
-        
+
         if (empty($data[2])) { // password_hash
             return "Password is required.";
         }
-        
+
         if (empty($data[3]) || strlen($data[3]) < 2) { // first_name
             return "First name is required (minimum 2 characters).";
         }
-        
+
         if (empty($data[4]) || strlen($data[4]) < 2) { // last_name
             return "Last name is required (minimum 2 characters).";
         }
-        
+
         return true;
     }
 
@@ -466,15 +498,15 @@ class User extends Model
     {
         $sql = "SELECT id FROM users WHERE email = ?";
         $params = [$email];
-        
+
         if ($excludeUserId !== null) {
             $sql .= " AND id != ?";
             $params[] = $excludeUserId;
         }
-        
+
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
-        
+
         return $stmt->fetch() !== false;
     }
 
@@ -489,15 +521,15 @@ class User extends Model
     {
         $sql = "SELECT id FROM users WHERE username = ?";
         $params = [$username];
-        
+
         if ($excludeUserId !== null) {
             $sql .= " AND id != ?";
             $params[] = $excludeUserId;
         }
-        
+
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
-        
+
         return $stmt->fetch() !== false;
     }
 }

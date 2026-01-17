@@ -286,3 +286,27 @@ INSERT INTO grades (id, grade_number, name) VALUES
 (4,4,'Grade 4'),
 (5,5,'Grade 5'),
 (6,6,'Grade 6');
+
+-- =========================================================
+-- DEFAULT USERS FOR TESTING
+-- admin@school.com / 12345678
+-- teacher@school.com / 12345678
+-- =========================================================
+
+-- Admin User
+INSERT INTO users (username, email, password_hash, first_name, last_name) VALUES
+('admin', 'admin@school.com', '$2a$12$uC7c/3/t/ZgCpQJlvY0tNuDWWuUIaEuD.37esw/Lo2Cne1xksgNEG', 'System', 'Admin'); -- Its password
+
+-- Assign OFFICE_ADMIN Role
+INSERT INTO user_roles (user_id, role_id)
+SELECT u.id, r.id FROM users u, roles r 
+WHERE u.username = 'admin' AND r.name = 'OFFICE_ADMIN';
+
+-- Teacher User
+INSERT INTO users (username, email, password_hash, first_name, last_name) VALUES
+('teacher', 'teacher@school.com', '$2a$12$uC7c/3/t/ZgCpQJlvY0tNuDWWuUIaEuD.37esw/Lo2Cne1xksgNEG', 'John', 'Doe'); -- same here its password
+
+-- Assign TEACHER Role
+INSERT INTO user_roles (user_id, role_id)
+SELECT u.id, r.id FROM users u, roles r 
+WHERE u.username = 'teacher' AND r.name = 'TEACHER';

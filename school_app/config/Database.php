@@ -7,7 +7,7 @@ class Database
     private static $host = 'localhost';
     private static $db_name = 'school_app';
     private static $username = 'root';
-    private static $password = '';
+    private static $password = 'password';
     private static $connection = null;
 
     public static function connect()

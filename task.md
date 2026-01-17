@@ -10,15 +10,15 @@
 - [x] **Authentication & Authorization**
     - [x] **AuthMiddleware**: Secure routes implemented in `index.php`.
     - [x] **AuthController**: Login logic with Role fetching.
-    - [x] **Views**: Styled `views/auth/login.php`.
+    - [x] **Views & Routing**: Restructured `index.php` and created view structure mapped to 30+ Figma screens.
 
-- [ ] **User Management (Office Admin)** <!-- id: 2 -->
-    - [ ] **Model**: Add `update($id, $data)` and `delete($id)` messages to `User.php`.
+- [x] **User Management (Office Admin)** <!-- id: 2 -->
+    - [x] **Model**: `User.php` is complete (CRUD + Role Sync). Added `Role.php` & `Permission.php`.
     - [ ] **Controller**: Implement `UserController` (index, create, store, edit, update, delete).
     - [ ] **Views**: Create `views/users/index.php` (List) and `views/users/edit.php` (Form).
 
-- [ ] **Academic Structure Management** <!-- id: 3 -->
-    - [ ] **Models**: `SchoolYear`, `Term`, `ClassModel`, `Subject` are present. Verify `update`/`delete` methods.
+- [x] **Academic Structure Management** <!-- id: 3 -->
+    - [x] **Models**: `SchoolYear`, `Term`, `ClassModel`, `Subject`, `Grade` are complete with CRUD.
     - [ ] **Controllers**: Implement CRUD actions in `SchoolYearController`, `TermController`, `ClassController`, `SubjectController`.
     - [ ] **Views**: Create management forms (Add/Edit/List) for each resource.
 
