@@ -1,10 +1,12 @@
 <?php
 require_once __DIR__ . '/../models/ClassModel.php';
 
-class ClassController {
+class ClassController
+{
 
-    public function add($data) {
-        $db = \Config\Database::connect();
+    public function add($data)
+    {
+        $db = Database::connect();
 
         // Optional: check grade exists
         $stmt = $db->prepare("SELECT * FROM grades WHERE id=?");
@@ -15,10 +17,11 @@ class ClassController {
         }
 
         // Add class
-        $success = ClassModel::create(
-            htmlspecialchars($data['name']),
-            $data['grade_id']
-        );
+        $classModel = new ClassModel();
+        $success = $classModel->create([
+            'name' => htmlspecialchars($data['name']),
+            'grade_id' => $data['grade_id']
+        ]);
 
         if ($success) {
             $GLOBALS['success'] = "Class added successfully!";
@@ -29,7 +32,8 @@ class ClassController {
         return $success;
     }
 
-    public function all() {
-        return ClassModel::all();
+    public function getAll()
+    {
+        return ClassModel::getAll();
     }
 }

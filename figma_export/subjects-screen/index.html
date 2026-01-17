@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="globals.css" />
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <section id="section-header">
+        <header class="app-header">
+            <div class="header-left">
+                <div class="logo-group">
+                    <!-- Merged Image for Logo Icon -->
+                    <div class="logo-icon-wrapper">
+                        <img src="${ASSET_PATH}/29_5886.svg" class="logo-layer" alt="" />
+                        <img src="${ASSET_PATH}/29_5887.svg" class="logo-layer" alt="" />
+                        <!--merged image-->
+                    </div>
+                    <div class="logo-text">EduTrack</div>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="notification-icon">
+                    <img src="${ASSET_PATH}/29_5896.svg" alt="Notifications" />
+                </div>
+                <div class="user-avatar">
+                    <img src="${ASSET_PATH}/b46401def05f0fc39327442da1c34c908d2bdc7c.png" alt="User Avatar" />
+                </div>
+            </div>
+        </header>
+    </section>
+
+    <section id="section-dashboard">
+        <div class="dashboard-container">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="sidebar-top">
+                    <div class="sidebar-label">EduTrack</div>
+                    <nav class="sidebar-nav">
+                        <a href="#" class="nav-item">
+                            <div class="nav-icon">
+                                <img src="${ASSET_PATH}/29_5909.svg" alt="" />
+                            </div>
+                            <span class="nav-text">Dashboard</span>
+                        </a>
+                        <a href="#" class="nav-item">
+                            <div class="nav-icon">
+                                <img src="${ASSET_PATH}/29_5916.svg" alt="" />
+                            </div>
+                            <span class="nav-text">Students</span>
+                        </a>
+                        <a href="#" class="nav-item">
+                            <div class="nav-icon">
+                                <img src="${ASSET_PATH}/29_5923.svg" alt="" />
+                            </div>
+                            <span class="nav-text">Teachers</span>
+                        </a>
+                        <a href="#" class="nav-item">
+                            <div class="nav-icon">
+                                <img src="${ASSET_PATH}/29_5930.svg" alt="" />
+                            </div>
+                            <span class="nav-text">Classes</span>
+                        </a>
+                        <a href="#" class="nav-item active">
+                            <div class="nav-icon">
+                                <img src="${ASSET_PATH}/29_5937.svg" alt="" />
+                            </div>
+                            <span class="nav-text">Subjects</span>
+                        </a>
+                        <a href="#" class="nav-item">
+                            <div class="nav-icon">
+                                <img src="${ASSET_PATH}/29_5944.svg" alt="" />
+                            </div>
+                            <span class="nav-text">Settings</span>
+                        </a>
+                    </nav>
+                </div>
+
+                <div class="sidebar-bottom">
+                    <button class="btn-new">
+                        <span>New</span>
+                    </button>
+                    <a href="#" class="help-link">
+                        <div class="nav-icon">
+                            <img src="${ASSET_PATH}/29_5956.svg" alt="" />
+                        </div>
+                        <span class="nav-text">Help and Docs</span>
+                    </a>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="main-content">
+                <div class="content-header">
+                    <h1>Subjects</h1>
+                    <button class="btn-add-subject">Add Subject</button>
+                </div>
+
+                <div class="tabs-container">
+                    <div class="tab-item">All Grades</div>
+                    <div class="tab-item">Grade 1</div>
+                    <div class="tab-item">Grade 2</div>
+                    <div class="tab-item">Grade 3</div>
+                    <div class="tab-item">Grade 4</div>
+                    <div class="tab-item">Grade 5</div>
+                    <div class="tab-item">Grade 6</div>
+                </div>
+
+                <div class="data-table-card">
+                    <div class="table-header-row">
+                        <div class="col-subject">Subject Name</div>
+                        <div class="col-grade">Grade</div>
+                    </div>
+                    <div class="table-body">
+                        <div class="table-row">
+                            <div class="col-subject">Mathematics</div>
+                            <div class="col-grade grade-tag-1">Grade 1</div>
+                        </div>
+                        <div class="table-row">
+                            <div class="col-subject">Science</div>
+                            <div class="col-grade grade-tag-1">Grade 1</div>
+                        </div>
+                        <div class="table-row">
+                            <div class="col-subject">English</div>
+                            <div class="col-grade grade-tag-1">Grade 2</div>
+                        </div>
+                        <div class="table-row">
+                            <div class="col-subject">History</div>
+                            <div class="col-grade grade-tag-1">Grade 3</div>
+                        </div>
+                        <div class="table-row">
+                            <div class="col-subject">Art</div>
+                            <div class="col-grade grade-tag-1">Grade 4</div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </section>
+
+</body>
+
+</html>

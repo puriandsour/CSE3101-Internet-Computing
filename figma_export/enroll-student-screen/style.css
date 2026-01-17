@@ -1,0 +1,595 @@
+.enroll-student {
+    display: flex;
+    flex-direction: column;
+    min-height: 800px;
+    align-items: flex-start;
+    position: relative;
+    background-color: #f9f9f9;
+}
+
+.enroll-student .depth-frame {
+    display: flex;
+    flex-direction: column;
+    height: 910px;
+    align-items: flex-start;
+    position: relative;
+    align-self: stretch;
+    width: 100%;
+}
+
+.enroll-student .div {
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 40px;
+    flex: 0 0 auto;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    border-color: #e5e8ea;
+    display: flex;
+    position: relative;
+    align-self: stretch;
+    width: 100%;
+}
+
+.enroll-student .depth-frame-2 {
+    display: inline-flex;
+    align-items: center;
+    gap: 16px;
+    position: relative;
+    flex: 0 0 auto;
+}
+
+.enroll-student .img {
+    position: relative;
+    flex: 0 0 auto;
+}
+
+.enroll-student .div-wrapper {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    position: relative;
+    flex: 0 0 auto;
+}
+
+.enroll-student .text-wrapper {
+    position: relative;
+    align-self: stretch;
+    margin-top: -1.00px;
+    font-family: "Inter-Bold", Helvetica;
+    font-weight: 700;
+    color: #0f1119;
+    font-size: 18px;
+    letter-spacing: 0;
+    line-height: 23px;
+    white-space: nowrap;
+}
+
+.enroll-student .depth-frame-3 {
+    position: relative;
+    flex: 1;
+    flex-grow: 1;
+}
+
+.enroll-student .depth-frame-4 {
+    align-items: flex-start;
+    justify-content: center;
+    gap: 4px;
+    padding: 20px 24px;
+    flex: 1;
+    flex-grow: 1;
+    display: flex;
+    position: relative;
+    align-self: stretch;
+    width: 100%;
+}
+
+.enroll-student .depth-frame-wrapper {
+    width: 320px;
+    height: 805px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    position: relative;
+}
+
+.enroll-student .depth-frame-5 {
+    flex-direction: column;
+    min-height: 700px;
+    justify-content: space-between;
+    flex: 1;
+    flex-grow: 1;
+    background-color: #f9f9f9;
+    display: flex;
+    align-items: flex-start;
+    padding: 16px;
+    position: relative;
+    align-self: stretch;
+    width: 100%;
+}
+
+.enroll-student .depth-frame-6 {
+    display: flex;
+    flex-direction: column;
+    height: 320px;
+    align-items: flex-start;
+    gap: 16px;
+    position: relative;
+    align-self: stretch;
+    width: 100%;
+}
+
+.enroll-student .depth-frame-7 {
+    display: flex;
+    align-items: flex-start;
+    align-self: stretch;
+    width: 100%;
+    flex-direction: column;
+    position: relative;
+    flex: 0 0 auto;
+}
+
+.enroll-student .text-wrapper-2 {
+    position: relative;
+    align-self: stretch;
+    margin-top: -1.00px;
+    font-family: "Inter-Medium", Helvetica;
+    font-weight: 500;
+    color: #0f1119;
+    font-size: 16px;
+    letter-spacing: 0;
+    line-height: 24px;
+}
+
+.enroll-student .depth-frame-8 {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    flex: 0 0 auto;
+    position: relative;
+    align-self: stretch;
+    width: 100%;
+}
+
+.enroll-student .depth-frame-9 {
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    position: relative;
+    align-self: stretch;
+    width: 100%;
+    flex: 0 0 auto;
+}
+
+.enroll-student .vector-wrapper {
+    position: relative;
+    flex: 1;
+    width: 24px;
+    flex-grow: 1;
+}
+
+.enroll-student .vector {
+    position: absolute;
+    top: 2px;
+    left: 3px;
+    width: 18px;
+    height: 19px;
+}
+
+.enroll-student .text-wrapper-3 {
+    position: relative;
+    align-self: stretch;
+    margin-top: -1.00px;
+    font-family: "Inter-Medium", Helvetica;
+    font-weight: 500;
+    color: #0f1119;
+    font-size: 14px;
+    letter-spacing: 0;
+    line-height: 21px;
+    white-space: nowrap;
+}
+
+.enroll-student .depth-frame-10 {
+    background-color: #e8ebf2;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    position: relative;
+    align-self: stretch;
+    width: 100%;
+    flex: 0 0 auto;
+}
+
+.enroll-student .vector-2 {
+    position: absolute;
+    top: 4px;
+    left: 1px;
+    width: 24px;
+    height: 15px;
+}
+
+.enroll-student .depth-frame-11 {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    position: relative;
+    align-self: stretch;
+    width: 100%;
+    flex: 0 0 auto;
+}
+
+.enroll-student .vector-3 {
+    position: absolute;
+    top: 5px;
+    left: 1px;
+    width: 23px;
+    height: 17px;
+}
+
+.enroll-student .vector-4 {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+}
+
+.enroll-student .vector-5 {
+    position: absolute;
+    top: 2px;
+    left: 4px;
+    width: 18px;
+    height: 19px;
+}
+
+.enroll-student .depth-frame-12 {
+    margin-bottom: -16.00px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    position: relative;
+    align-self: stretch;
+    width: 100%;
+    flex: 0 0 auto;
+}
+
+.enroll-student .depth-frame-13 {
+    gap: 16px;
+    align-self: stretch;
+    width: 100%;
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    position: relative;
+}
+
+.enroll-student .depth-frame-14 {
+    min-width: 84px;
+    max-width: 480px;
+    height: 40px;
+    align-items: center;
+    justify-content: center;
+    padding: 0px 16px;
+    width: 100%;
+    background-color: #1e3a89;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    position: relative;
+}
+
+.enroll-student .depth-frame-15 {
+    display: inline-flex;
+    align-items: center;
+    flex-direction: column;
+    position: relative;
+    flex: 0 0 auto;
+}
+
+.enroll-student .text-wrapper-4 {
+    position: relative;
+    align-self: stretch;
+    margin-top: -1.00px;
+    font-family: "Inter-Bold", Helvetica;
+    font-weight: 700;
+    color: #f9f9f9;
+    font-size: 14px;
+    text-align: center;
+    letter-spacing: 0;
+    line-height: 21px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+}
+
+.enroll-student .depth-frame-16 {
+    display: flex;
+    flex-direction: column;
+    height: 40px;
+    align-items: flex-start;
+    gap: 4px;
+    position: relative;
+    align-self: stretch;
+    width: 100%;
+}
+
+.enroll-student .depth-frame-17 {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    position: relative;
+    flex: 1;
+    align-self: stretch;
+    width: 100%;
+    flex-grow: 1;
+}
+
+.enroll-student .depth-frame-18 {
+    display: flex;
+    width: 908px;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 20px 0px;
+    position: relative;
+    align-self: stretch;
+}
+
+.enroll-student .depth-frame-19 {
+    max-width: 960px;
+    height: 695px;
+    padding: 20px 0px;
+    flex: 1;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    position: relative;
+}
+
+.enroll-student .depth-frame-20 {
+    flex-wrap: wrap;
+    justify-content: space-around;
+    gap: 12px 12px;
+    flex: 0 0 auto;
+    display: flex;
+    align-items: flex-start;
+    padding: 16px;
+    position: relative;
+    align-self: stretch;
+    width: 100%;
+}
+
+.enroll-student .depth-frame-21 {
+    display: flex;
+    flex-direction: column;
+    width: 288px;
+    align-items: flex-start;
+    position: relative;
+}
+
+.enroll-student .text-wrapper-5 {
+    color: #0c1c11;
+    font-size: 32px;
+    line-height: 40px;
+    position: relative;
+    align-self: stretch;
+    margin-top: -1.00px;
+    font-family: "Inter-Bold", Helvetica;
+    font-weight: 700;
+    letter-spacing: 0;
+}
+
+.enroll-student .depth-frame-22 {
+    position: relative;
+    align-self: stretch;
+    width: 100%;
+    height: 264px;
+}
+
+.enroll-student .depth-frame-23 {
+    display: flex;
+    width: 876px;
+    height: 171px;
+    align-items: flex-start;
+    justify-content: space-around;
+    gap: 16px;
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    border-radius: 8px;
+}
+
+.enroll-student .depth-frame-24 {
+    flex-direction: column;
+    width: 608px;
+    height: 171px;
+    align-items: flex-start;
+    gap: 4px;
+    display: flex;
+    position: relative;
+}
+
+.enroll-student .text-wrapper-6 {
+    position: relative;
+    align-self: stretch;
+    margin-top: -1.00px;
+    font-family: "Inter-Bold", Helvetica;
+    font-weight: 700;
+    color: #0c1c11;
+    font-size: 16px;
+    letter-spacing: 0;
+    line-height: 20px;
+}
+
+.enroll-student .text-wrapper-7 {
+    position: relative;
+    align-self: stretch;
+    margin-top: -1.00px;
+    font-family: "Inter-Regular", Helvetica;
+    font-weight: 400;
+    color: #4f9666;
+    font-size: 14px;
+    letter-spacing: 0;
+    line-height: 21px;
+}
+
+.enroll-student .image {
+    position: absolute;
+    top: 85px;
+    left: 30px;
+    width: 163px;
+    height: 163px;
+    aspect-ratio: 1;
+    object-fit: cover;
+}
+
+.enroll-student .depth-frame-25 {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 16px 16px 8px;
+    position: relative;
+    align-self: stretch;
+    width: 100%;
+    flex: 0 0 auto;
+}
+
+.enroll-student .text-wrapper-8 {
+    position: relative;
+    align-self: stretch;
+    margin-top: -1.00px;
+    font-family: "Inter-Bold", Helvetica;
+    font-weight: 700;
+    color: #0c1c11;
+    font-size: 18px;
+    letter-spacing: 0;
+    line-height: 23px;
+}
+
+.enroll-student .depth-frame-26 {
+    display: inline-flex;
+    flex-wrap: wrap;
+    max-width: 480px;
+    align-items: flex-end;
+    gap: 16px 16px;
+    padding: 12px 16px;
+    position: relative;
+    flex: 0 0 auto;
+}
+
+.enroll-student .depth-frame-27 {
+    min-width: 160px;
+    flex: 1;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    position: relative;
+}
+
+.enroll-student .img-wrapper {
+    height: 32px;
+    background-color: #f7fcf9;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid;
+    border-color: #d1e8d6;
+    position: relative;
+    align-self: stretch;
+    width: 100%;
+}
+
+.enroll-student .vector-6 {
+    position: absolute;
+    top: -520px;
+    left: -4564px;
+    width: 448px;
+    height: 32px;
+}
+
+.enroll-student .vector-7 {
+    position: absolute;
+    top: -623px;
+    left: -4564px;
+    width: 448px;
+    height: 32px;
+}
+
+.enroll-student .depth-frame-28 {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 4px 16px 12px;
+    align-self: stretch;
+    width: 100%;
+    position: relative;
+    flex: 0 0 auto;
+}
+
+.enroll-student .p {
+    position: relative;
+    align-self: stretch;
+    margin-top: -1.00px;
+    font-family: "Inter-Regular", Helvetica;
+    font-weight: 400;
+    color: #96794f;
+    font-size: 14px;
+    letter-spacing: 0;
+    line-height: 21px;
+}
+
+.enroll-student .depth-frame-29 {
+    display: flex;
+    align-items: flex-start;
+    padding: 12px 16px;
+    align-self: stretch;
+    width: 100%;
+    position: relative;
+    flex: 0 0 auto;
+}
+
+.enroll-student .depth-frame-30 {
+    display: flex;
+    min-width: 84px;
+    max-width: 480px;
+    height: 40px;
+    align-items: center;
+    justify-content: center;
+    padding: 0px 16px;
+    position: relative;
+    flex: 1;
+    flex-grow: 1;
+    background-color: #1f3b8a;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.enroll-student .text-wrapper-9 {
+    color: #ffffff;
+    font-size: 14px;
+    text-align: center;
+    line-height: 21px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    position: relative;
+    align-self: stretch;
+    margin-top: -1.00px;
+    font-family: "Inter-Bold", Helvetica;
+    font-weight: 700;
+    letter-spacing: 0;
+}
