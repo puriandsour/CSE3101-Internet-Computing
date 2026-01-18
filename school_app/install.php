@@ -6,7 +6,7 @@
 
 $host = 'localhost';
 $username = 'root';
-$password = 'password'; // Default XAMPP password
+$password = ''; // Default XAMPP password
 $dbname = 'school_app';
 
 echo "<h1>School Management System Installation</h1>";
