@@ -22,8 +22,9 @@ class Student extends Model
                     g.name as grade_name,
                     g.grade_number
                 FROM students s
-                LEFT JOIN enrollments e ON s.id = e.student_id AND e.status = 'ACTIVE'
-                LEFT JOIN school_years sy ON e.school_year_id = sy.id AND sy.is_current = 1
+                LEFT JOIN enrollments e ON s.id = e.student_id 
+                    AND e.status = 'ACTIVE'
+                    AND e.school_year_id = (SELECT id FROM school_years WHERE is_current = 1 LIMIT 1)
                 LEFT JOIN classes c ON e.class_id = c.id
                 LEFT JOIN grades g ON c.grade_id = g.id
                 WHERE 1=1";
@@ -52,8 +53,9 @@ class Student extends Model
 
         // Count for pagination
         $countSql = "SELECT COUNT(DISTINCT s.id) FROM students s
-                     LEFT JOIN enrollments e ON s.id = e.student_id AND e.status = 'ACTIVE'
-                     LEFT JOIN school_years sy ON e.school_year_id = sy.id AND sy.is_current = 1
+                     LEFT JOIN enrollments e ON s.id = e.student_id 
+                        AND e.status = 'ACTIVE'
+                        AND e.school_year_id = (SELECT id FROM school_years WHERE is_current = 1 LIMIT 1)
                      LEFT JOIN classes c ON e.class_id = c.id
                      LEFT JOIN grades g ON c.grade_id = g.id
                      WHERE 1=1";
@@ -273,8 +275,9 @@ class Student extends Model
                     c.name as class_name,
                     g.name as grade_name
                 FROM students s
-                LEFT JOIN enrollments e ON s.id = e.student_id AND e.status = 'ACTIVE'
-                LEFT JOIN school_years sy ON e.school_year_id = sy.id AND sy.is_current = 1
+                LEFT JOIN enrollments e ON s.id = e.student_id 
+                    AND e.status = 'ACTIVE'
+                    AND e.school_year_id = (SELECT id FROM school_years WHERE is_current = 1 LIMIT 1)
                 LEFT JOIN classes c ON e.class_id = c.id
                 LEFT JOIN grades g ON c.grade_id = g.id
                 WHERE s.first_name LIKE ? 

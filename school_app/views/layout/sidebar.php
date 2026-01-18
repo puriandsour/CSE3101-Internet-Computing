@@ -39,8 +39,8 @@ $currentAction = $_GET['action'] ?? 'index';
                 </svg>
                 <span>Students</span>
             </a>
-            <a href="index.php?controller=user&action=index"
-                class="nav-item <?php echo ($currentController == 'user') ? 'active' : ''; ?>">
+            <a href="index.php?controller=teacher&action=index"
+                class="nav-item <?php echo ($currentController == 'teacher') ? 'active' : ''; ?>">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                     stroke-linejoin="round">
                     <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
@@ -49,6 +49,15 @@ $currentAction = $_GET['action'] ?? 'index';
                     <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
                 </svg>
                 <span>Teachers</span>
+            </a>
+            <a href="index.php?controller=user&action=index"
+                class="nav-item <?php echo ($currentController == 'user') ? 'active' : ''; ?>">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                <span>Users</span>
             </a>
             <a href="index.php?controller=class&action=index"
                 class="nav-item <?php echo ($currentController == 'class') ? 'active' : ''; ?>">
@@ -133,7 +142,7 @@ $currentAction = $_GET['action'] ?? 'index';
             </svg>
             <span>Help and Docs</span>
         </a>
-        <a href="index.php?controller=auth&action=logout" class="nav-item" style="color: #ef4444;">
+        <a href="javascript:void(0)" onclick="showLogoutModal()" class="nav-item" style="color: #ef4444;">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                 stroke-linejoin="round">
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
@@ -144,3 +153,51 @@ $currentAction = $_GET['action'] ?? 'index';
         </a>
     </div>
 </aside>
+
+<!-- Logout Confirmation Modal -->
+<div id="logoutModal"
+    style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 9999; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease;">
+    <div
+        style="background: white; width: 100%; max-width: 480px; padding: 40px; border-radius: 24px; box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25); text-align: center; transform: scale(0.95); transition: transform 0.3s ease;">
+        <h2 style="font-size: 28px; font-weight: 800; color: #0f172a; margin-bottom: 16px;">Are you sure you want to log
+            out?</h2>
+        <p style="color: #64748b; font-size: 16px; line-height: 1.6; margin-bottom: 32px;">You will need to enter your
+            credentials to access the system again.</p>
+
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+            <a href="index.php?controller=auth&action=logout"
+                style="background-color: #1e3a8a; color: white; padding: 16px; border-radius: 12px; font-weight: 700; text-decoration: none; font-size: 16px; display: block;">
+                Yes, Logout
+            </a>
+            <button onclick="hideLogoutModal()"
+                style="background-color: #f1f5f9; color: #1e293b; padding: 16px; border-radius: 12px; font-weight: 700; border: none; cursor: pointer; font-size: 16px; width: 100%;">
+                Cancel
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showLogoutModal() {
+        const modal = document.getElementById('logoutModal');
+        modal.style.display = 'flex';
+        setTimeout(() => {
+            modal.style.opacity = '1';
+            modal.firstElementChild.style.transform = 'scale(1)';
+        }, 10);
+    }
+
+    function hideLogoutModal() {
+        const modal = document.getElementById('logoutModal');
+        modal.style.opacity = '0';
+        modal.firstElementChild.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+            modal.style.display = 'none';
+        }, 300);
+    }
+
+    // Close on background click
+    document.getElementById('logoutModal').addEventListener('click', function (e) {
+        if (e.target === this) hideLogoutModal();
+    });
+</script>

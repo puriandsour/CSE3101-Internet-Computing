@@ -5,6 +5,49 @@ require_once __DIR__ . '/Model.php';
 class ClassModel extends Model
 {
     /**
+     * Get all classes with grade information and student count for current school year
+     */
+    public static function getAllWithStudentCounts($filters = [])
+    {
+        $db = Database::connect();
+
+        // Get current school year
+        $yearStmt = $db->query("SELECT id FROM school_years WHERE is_current = 1 LIMIT 1");
+        $currentYear = $yearStmt->fetch(PDO::FETCH_OBJ);
+        $schoolYearId = $currentYear ? $currentYear->id : 0;
+
+        $sql = "SELECT 
+                    c.*, 
+                    g.name as grade_name, 
+                    g.grade_number,
+                    (SELECT COUNT(*) FROM enrollments e 
+                     WHERE e.class_id = c.id 
+                       AND e.school_year_id = ? 
+                       AND e.status = 'ACTIVE') as student_count
+                FROM classes c
+                JOIN grades g ON c.grade_id = g.id
+                WHERE 1=1";
+
+        $params = [$schoolYearId];
+
+        if (!empty($filters['grade_id'])) {
+            $sql .= " AND c.grade_id = ?";
+            $params[] = $filters['grade_id'];
+        }
+
+        if (isset($filters['is_active'])) {
+            $sql .= " AND c.is_active = ?";
+            $params[] = $filters['is_active'];
+        }
+
+        $sql .= " ORDER BY g.grade_number, c.name";
+
+        $stmt = $db->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
+    }
+
+    /**
      * Get all classes with grade information
      */
     public static function getAll($filters = [])

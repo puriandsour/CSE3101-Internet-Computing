@@ -10,6 +10,14 @@ require_once 'controllers/AuthController.php';
 require_once 'controllers/StudentController.php';
 require_once 'controllers/ScoreController.php';
 require_once 'controllers/ReportController.php';
+require_once 'controllers/TeacherController.php';
+require_once 'controllers/UserController.php';
+require_once 'controllers/ProfileController.php';
+require_once 'controllers/ClassController.php';
+require_once 'controllers/SubjectController.php';
+require_once 'controllers/TermController.php';
+require_once 'controllers/AdminController.php';
+require_once 'controllers/SchoolYearController.php';
 
 // --- VIEW HELPER ---
 function render_view($viewPath, $data = [])
@@ -64,14 +72,32 @@ if ($c === 'auth' && $a === 'logout') {
 if ($role === 'OFFICE_ADMIN') {
     switch ($c) {
         case 'admin':
-            if ($a === 'dashboard')
-                render_view('views/admin/dashboard.php');
+            if ($a === 'dashboard') {
+                $adminController = new AdminController();
+                $data = $adminController->dashboard();
+                render_view('views/admin/dashboard.php', $data);
+            }
+            break;
+        case 'teacher':
+            $teacherController = new TeacherController();
+            if ($a === 'add')
+                $teacherController->add();
+            elseif ($a === 'create')
+                $teacherController->create($_POST);
+            else {
+                $data = $teacherController->index();
+                render_view('views/admin/teachers/index.php', $data);
+            }
             break;
         case 'user':
+            $userController = new UserController();
             if ($a === 'add')
-                render_view('views/admin/users/add.php');
-            else
-                render_view('views/admin/users/index.php');
+                $userController->add();
+            elseif ($a === 'create')
+                $userController->create($_POST);
+            else {
+                $userController->index();
+            }
             break;
         case 'student':
             $studentController = new StudentController();
@@ -87,25 +113,66 @@ if ($role === 'OFFICE_ADMIN') {
             }
             break;
         case 'class':
-            render_view('views/admin/academic/classes.php');
+            $classController = new ClassController();
+            if ($a === 'add')
+                $classController->add();
+            elseif ($a === 'create')
+                $classController->create($_POST);
+            else {
+                $classController->index();
+            }
             break;
         case 'subject':
-            render_view('views/admin/academic/subjects.php');
+            $subjectController = new SubjectController();
+            if ($a === 'add')
+                $subjectController->add();
+            elseif ($a === 'create')
+                $subjectController->create($_POST);
+            else {
+                $subjectController->index();
+            }
             break;
         case 'schoolYear':
-            render_view('views/admin/academic/schoolYears.php');
+            $syController = new SchoolYearController();
+            if ($a === 'add')
+                $syController->add();
+            elseif ($a === 'create')
+                $syController->create($_POST);
+            elseif ($a === 'edit')
+                $syController->edit($_GET['id'] ?? null);
+            elseif ($a === 'update')
+                $syController->update($_GET['id'] ?? null, $_POST);
+            elseif ($a === 'setCurrent')
+                $syController->setAsCurrent($_GET['id'] ?? null);
+            else
+                $syController->index();
             break;
         case 'term':
-            render_view('views/admin/academic/terms.php');
+            $termController = new TermController();
+            if ($a === 'index')
+                $termController->index($_GET['id'] ?? null);
+            elseif ($a === 'edit')
+                $termController->edit($_GET['id'] ?? null);
+            elseif ($a === 'update')
+                $termController->update($_GET['id'] ?? null, $_POST);
+            else
+                $syController->index();
             break;
         case 'settings':
-            render_view('views/shared/settings.php');
+            $syController = new SchoolYearController();
+            $syController->index();
             break;
         case 'quickactions':
             render_view('views/admin/quickActions.php');
             break;
         case 'profile':
-            render_view('views/shared/profile.php');
+            $p = new ProfileController();
+            if ($a === 'changePassword')
+                $p->changePasswordForm();
+            elseif ($a === 'updatePassword')
+                $p->updatePassword($_POST);
+            else
+                $p->index();
             break;
         case 'notifications':
             render_view('views/shared/notifications.php');
@@ -136,7 +203,13 @@ if ($role === 'OFFICE_ADMIN') {
                 render_view('views/teacher/reports/generate.php');
             break;
         case 'profile':
-            render_view('views/shared/profile.php');
+            $p = new ProfileController();
+            if ($a === 'changePassword')
+                $p->changePasswordForm();
+            elseif ($a === 'updatePassword')
+                $p->updatePassword($_POST);
+            else
+                $p->index();
             break;
         case 'notifications':
             render_view('views/shared/notifications.php');

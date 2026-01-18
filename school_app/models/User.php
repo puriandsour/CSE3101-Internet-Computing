@@ -79,7 +79,17 @@ class User extends Model
     public static function findById($id)
     {
         $db = Database::connect();
-        $stmt = $db->prepare("SELECT * FROM users WHERE id = ? LIMIT 1");
+        $sql = "SELECT 
+                    u.*,
+                    r.id as role_id,
+                    r.name as role_name,
+                    r.description as role_description
+                FROM users u
+                LEFT JOIN user_roles ur ON u.id = ur.user_id
+                LEFT JOIN roles r ON ur.role_id = r.id
+                WHERE u.id = ? LIMIT 1";
+
+        $stmt = $db->prepare($sql);
         $stmt->execute([$id]);
         return $stmt->fetch(PDO::FETCH_OBJ);
     }
