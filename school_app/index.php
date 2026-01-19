@@ -214,6 +214,8 @@ if ($role === 'OFFICE_ADMIN') {
                 render_view('views/teacher/scores/manage.php');
             } elseif ($a === 'getStudents') {
                 $scoreController->getStudents();
+            } elseif ($a === 'getSubjects') {
+                $scoreController->getSubjects();
             } elseif ($a === 'save') {
                 $scoreController->save();
             } elseif ($a === 'delete') {
@@ -225,13 +227,15 @@ if ($role === 'OFFICE_ADMIN') {
             if ($a === 'index') {
                 $data = $reportController->index();
                 render_view('views/teacher/reports/index.php', $data);
-            } elseif ($a === 'generate') {
-                $data = $reportController->generate();
-                render_view('views/teacher/reports/generate.php', $data);
-            } elseif ($a === 'create') {
-                $reportController->create($_POST);
+            } elseif ($a === 'student') {
+                $data = $reportController->student();
+                render_view('views/teacher/reports/student.php', $data);
+            } elseif ($a === 'performance') {
+                $data = $reportController->performance();
+                render_view('views/teacher/reports/performance.php', $data);
             } elseif ($a === 'view') {
-                render_view('views/teacher/reports/view.php');
+                $data = $reportController->view();
+                render_view('views/teacher/reports/view.php', $data);
             }
             break;
         case 'profile':

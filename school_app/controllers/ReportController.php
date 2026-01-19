@@ -6,34 +6,20 @@ require_once __DIR__ . '/../models/ClassModel.php';
 class ReportController
 {
 
+    /**
+     * Report Landing Page
+     */
     public function index()
     {
-        // Get recent reports - FIXED SQL with student_id
-        $db = Database::connect();
-        $stmt = $db->query("
-            SELECT 
-                s.id as student_id,
-                s.first_name,
-                s.last_name,
-                s.admission_no,
-                c.name as class_name,
-                sy.name as term_name,
-                NOW() as generated_at
-            FROM students s
-            JOIN enrollments e ON s.id = e.student_id
-            JOIN classes c ON e.class_id = c.id
-            JOIN school_years sy ON e.school_year_id = sy.id
-            WHERE s.is_active = 1
-            LIMIT 10
-        ");
-        $reports = $stmt->fetchAll(PDO::FETCH_OBJ);
-
-        return ['reports' => $reports];
+        return [];
     }
 
-    public function generate()
+    /**
+     * Individual Student Report Selection
+     */
+    public function student()
     {
-        $classes = ClassModel::getAll();
+        $classes = ClassModel::getAll(['is_active' => 1]);
         $terms = Term::getAll();
 
         return [
@@ -42,24 +28,126 @@ class ReportController
         ];
     }
 
-    public function create($data)
+    /**
+     * Performance Analytics View
+     */
+    public function performance()
     {
-        if (empty($data['student_id']) || empty($data['term_id'])) {
-            $_SESSION['error'] = "Please select student and term.";
-            header("Location: index.php?controller=report&action=generate");
+        $db = Database::connect();
+        $classId = $_GET['class_id'] ?? null;
+        $termId = $_GET['term_id'] ?? null;
+
+        $classes = ClassModel::getAll(['is_active' => 1]);
+        $terms = Term::getAll();
+
+        $subjects = [];
+        $overallAverage = 0;
+
+        if ($classId && $termId) {
+            $class = ClassModel::find($classId);
+            if ($class) {
+                // Get subjects for this grade with averages for THIS class
+                $stmt = $db->prepare("
+                    SELECT 
+                        s.id, s.name,
+                        COALESCE(sub_avg.avg_score, 0) as avg_score
+                    FROM subjects s
+                    LEFT JOIN (
+                        SELECT sc.subject_id, AVG(sc.score) as avg_score
+                        FROM scores sc
+                        JOIN enrollments e ON sc.enrollment_id = e.id
+                        WHERE sc.term_id = ? AND e.class_id = ?
+                        GROUP BY sc.subject_id
+                    ) sub_avg ON s.id = sub_avg.subject_id
+                    WHERE s.grade_id = ? AND s.is_active = 1
+                ");
+                $stmt->execute([$termId, $classId, $class->grade_id]);
+                $subjects = $stmt->fetchAll(PDO::FETCH_OBJ);
+
+                // Overall average
+                $scoresStmt = $db->prepare("
+                    SELECT AVG(sc.score) as avg
+                    FROM scores sc
+                    JOIN enrollments e ON sc.enrollment_id = e.id
+                    WHERE e.class_id = ? AND sc.term_id = ?
+                ");
+                $scoresStmt->execute([$classId, $termId]);
+                $overallAverage = round($scoresStmt->fetch(PDO::FETCH_OBJ)->avg ?? 0, 1);
+            }
+        }
+
+        return [
+            'classes' => $classes,
+            'terms' => $terms,
+            'selectedClassId' => $classId,
+            'selectedTermId' => $termId,
+            'subjects' => $subjects,
+            'overallAverage' => $overallAverage
+        ];
+    }
+
+    /**
+     * View/Generate Individual Student Report
+     */
+    public function view()
+    {
+        $studentId = $_GET['student_id'] ?? null;
+        $termId = $_GET['term_id'] ?? null;
+
+        if (!$studentId || !$termId) {
+            $_SESSION['error'] = "Student and Term are required.";
+            header("Location: index.php?controller=report&action=student");
             exit;
         }
 
-        $student = Student::find($data['student_id']);
+        $student = Student::find($studentId);
+        $term = Term::find($termId);
 
-        if ($student) {
-            $_SESSION['success'] = "Report generated for " . $student->first_name . " " . $student->last_name . "!";
-            // Redirect to view the report
-            header("Location: index.php?controller=report&action=view&student_id=" . $data['student_id'] . "&term_id=" . $data['term_id']);
-        } else {
-            $_SESSION['error'] = "Student not found.";
-            header("Location: index.php?controller=report&action=generate");
+        $db = Database::connect();
+
+        // Get enrollment for this year
+        $stmt = $db->prepare("
+            SELECT e.*, c.name as class_name, g.name as grade_name, sy.name as year_name
+            FROM enrollments e
+            JOIN classes c ON e.class_id = c.id
+            JOIN grades g ON c.grade_id = g.id
+            JOIN school_years sy ON e.school_year_id = sy.id
+            WHERE e.student_id = ? 
+              AND e.school_year_id = (SELECT school_year_id FROM terms WHERE id = ?)
+              AND e.status = 'ACTIVE'
+            LIMIT 1
+        ");
+        $stmt->execute([$studentId, $termId]);
+        $enrollment = $stmt->fetch(PDO::FETCH_OBJ);
+
+        if (!$enrollment) {
+            $_SESSION['error'] = "Student has no enrollment for this term's school year.";
+            header("Location: index.php?controller=report&action=student");
+            exit;
         }
-        exit;
+
+        // Get scores
+        $stmt = $db->prepare("
+            SELECT s.*, sub.name as subject_name
+            FROM scores s
+            JOIN subjects sub ON s.subject_id = sub.id
+            WHERE s.enrollment_id = ? AND s.term_id = ?
+        ");
+        $stmt->execute([$enrollment->id, $termId]);
+        $scores = $stmt->fetchAll(PDO::FETCH_OBJ);
+
+        // Calculate Average
+        $total = 0;
+        foreach ($scores as $s)
+            $total += $s->score;
+        $average = count($scores) > 0 ? round($total / count($scores), 1) : 0;
+
+        return [
+            'student' => $student,
+            'term' => $term,
+            'enrollment' => $enrollment,
+            'scores' => $scores,
+            'average' => $average
+        ];
     }
 }

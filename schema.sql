@@ -288,9 +288,9 @@ INSERT INTO grades (id, grade_number, name) VALUES
 (6,6,'Grade 6');
 
 -- =========================================================
--- DEFAULT USERS FOR TESTING
--- admin@school.com / 12345678
--- teacher@school.com / 12345678
+-- DEFAULT USERS FOR TESTING in production we ar e not supposed to comment password in db schema. next time we need an env or something
+-- admin@school.com / password
+-- teacher@school.com / password
 -- =========================================================
 
 -- Admin User
@@ -312,7 +312,7 @@ SELECT u.id, r.id FROM users u, roles r
 WHERE u.username = 'teacher' AND r.name = 'TEACHER';
 
 -- =========================================================
--- ADDITIONAL SEED DATA FOR DEMO (Matches Image)
+-- ADDITIONAL SEED DATA FOR DEMO (Matches Figma Design as intructed. Someone needs to add the rest of the seed data)
 -- =========================================================
 
 -- School Year 2025-2026

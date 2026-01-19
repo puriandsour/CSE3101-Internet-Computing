@@ -212,6 +212,7 @@ class Student extends Model
                 WHERE e.class_id = ? 
                   AND e.school_year_id = ?
                   AND e.status = 'ACTIVE'
+                  AND s.is_active = 1
                 ORDER BY s.last_name, s.first_name";
 
         $stmt = $db->prepare($sql);

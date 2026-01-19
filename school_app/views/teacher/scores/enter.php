@@ -1,153 +1,230 @@
 <?php
 /**
- * Enter Scores View
- * Data provided by ScoreController: $classes, $terms, $subjects
+ * Enter Scores View - High Fidelity Single Student Entry
+ * Data provided by ScoreController: $classes, $terms, $subjects, $selectedClassId, $selectedTermId, $selectedSubjectId
  */
+
+$classId = $selectedClassId ?? '';
+$termId = $selectedTermId ?? '';
+$subjectId = $selectedSubjectId ?? '';
+
+// Find names for the header
+$className = 'Select Class';
+$subjName = 'Select Subject';
+
+foreach ($classes as $c) {
+    if ($c->id == $classId) {
+        $className = $c->grade_name . ' - ' . $c->name;
+        break;
+    }
+}
+foreach ($subjects as $s) {
+    if ($s->id == $subjectId) {
+        $subjName = $s->name;
+        break;
+    }
+}
 ?>
 
-<div class="scores-container">
-    <!-- Header Section -->
-    <div style="margin-bottom: 24px;">
-        <h1 class="text-h1" style="font-weight: 700; font-size: 32px; color: var(--text-dark);">Enter Student Scores</h1>
-    </div>
+<!-- Load Tailwind -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
-    <!-- Form Card -->
-    <div class="card" style="padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #fff; margin-bottom: 24px;">
-        <form method="POST" action="index.php?controller=score&action=save" id="scoreForm">
-            <!-- Selection Section -->
-            <div style="margin-bottom: 24px;">
-                <h3 style="font-size: 16px; font-weight: 600; color: #1e293b; margin-bottom: 16px;">Select Class and Term</h3>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 16px;">
-                    <div>
-                        <label style="display: block; color: #64748b; font-size: 13px; font-weight: 500; margin-bottom: 6px;">Select Class *</label>
-                        <select name="class_id" id="classSelect" class="input-field" required onchange="loadStudents()"
-                                style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #e2e8f0; background-color: #f1f5f9; font-size: 14px; color: #1e293b;">
-                            <option value="">Choose a class...</option>
-                            <?php if (!empty($classes)): ?>
-                                <?php foreach ($classes as $class): ?>
-                                    <option value="<?php echo $class->id; ?>">
-                                        <?php echo htmlspecialchars($class->grade_name . ' - ' . $class->name); ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <option value="" disabled>No classes assigned</option>
-                            <?php endif; ?>
-                        </select>
-                    </div>
-                    <div>
-                        <label style="display: block; color: #64748b; font-size: 13px; font-weight: 500; margin-bottom: 6px;">Select Term *</label>
-                        <select name="term_id" id="termSelect" class="input-field" required
-                                style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #e2e8f0; background-color: #f1f5f9; font-size: 14px; color: #1e293b;">
-                            <option value="">Choose a term...</option>
-                            <?php if (!empty($terms)): ?>
-                                <?php foreach ($terms as $term): ?>
-                                    <option value="<?php echo $term->id; ?>">
-                                        <?php echo htmlspecialchars($term->name . ' - ' . ($term->school_year_name ?? '')); ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </select>
-                    </div>
-                    <div>
-                        <label style="display: block; color: #64748b; font-size: 13px; font-weight: 500; margin-bottom: 6px;">Select Subject *</label>
-                        <select name="subject_id" id="subjectSelect" class="input-field" required
-                                style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #e2e8f0; background-color: #f1f5f9; font-size: 14px; color: #1e293b;">
-                            <option value="">Choose a subject...</option>
-                            <?php if (!empty($subjects)): ?>
-                                <?php foreach ($subjects as $subject): ?>
-                                    <option value="<?php echo $subject->id; ?>">
-                                        <?php echo htmlspecialchars($subject->name); ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </select>
-                    </div>
-                </div>
+<div class="layout-content-container flex flex-col w-full flex-1 bg-white">
+    <div class="flex flex-col gap-6 p-10 max-w-[1200px]">
 
-                <button type="button" onclick="loadStudents()" class="btn-secondary" style="padding: 10px 20px; border-radius: 8px; font-weight: 500; font-size: 14px; background-color: #f1f5f9; color: #334155; border: none; cursor: pointer;">Load Students</button>
+        <!-- Header -->
+        <div class="flex flex-col gap-1">
+            <h1 class="text-[#0f121a] tracking-light text-[32px] font-bold leading-tight">Enter Student Score</h1>
+            <div class="flex flex-col mt-2">
+                <p class="text-[#0f121a] text-lg font-bold" id="formHeaderDisplay">
+                    <?php echo htmlspecialchars($className); ?> | <?php echo htmlspecialchars($subjName); ?>
+                </p>
+                <p class="text-[#556591] text-sm font-medium">Student Score Entry</p>
             </div>
+        </div>
 
-            <!-- Students Table (Hidden by default) -->
-            <div id="studentsTable" style="display: none;">
-                <h3 style="font-size: 16px; font-weight: 600; color: #1e293b; margin-bottom: 16px;">Enter Scores</h3>
-                <div style="border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;">
-                    <table style="width: 100%; border-collapse: collapse; text-align: left;">
-                        <thead>
-                            <tr style="border-bottom: 1px solid #f1f5f9; background-color: #fff;">
-                                <th style="padding: 16px; color: #64748b; font-size: 13px; font-weight: 600;">Admission No</th>
-                                <th style="padding: 16px; color: #64748b; font-size: 13px; font-weight: 600;">Student Name</th>
-                                <th style="padding: 16px; color: #64748b; font-size: 13px; font-weight: 600;">Score (0-100)</th>
-                                <th style="padding: 16px; color: #64748b; font-size: 13px; font-weight: 600;">Remarks</th>
-                            </tr>
-                        </thead>
-                        <tbody id="studentsTableBody">
-                            <!-- Students will be loaded here -->
-                        </tbody>
-                    </table>
+        <div class="flex flex-col lg:flex-row gap-12 mt-4">
+            <!-- Form Section -->
+            <form method="POST" action="index.php?controller=score&action=save" class="flex-1 flex flex-col gap-6"
+                id="scoreForm">
+                <input type="hidden" name="scores[0][enrollment_id]" id="enrollmentIdInput">
+
+                <!-- Grade / Class -->
+                <div class="flex flex-col gap-2">
+                    <label class="text-[#0f121a] text-base font-bold">Grade</label>
+                    <div class="relative">
+                        <select name="class_id" id="classSelect" required onchange="onClassChange()"
+                            class="w-full h-14 px-4 bg-[#f9f9fb] border-[#e9ebf2] rounded-xl text-[#0f121a] text-base font-medium focus:ring-[#1145d4] focus:border-[#1145d4]">
+                            <option value="">Select Grade</option>
+                            <?php foreach ($classes as $class): ?>
+                                <option value="<?php echo $class->id; ?>" <?php echo $class->id == $classId ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($class->grade_name . ' - ' . $class->name); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
                 </div>
 
-                <div style="margin-top: 24px; display: flex; gap: 12px;">
-                    <button type="submit" class="btn-primary" style="padding: 10px 24px; border-radius: 8px; font-weight: 500; font-size: 14px; background-color: #2563eb; color: #fff; border: none; cursor: pointer;">Save All Scores</button>
-                    <button type="button" onclick="resetForm()" class="btn-secondary" style="padding: 10px 24px; border-radius: 8px; font-weight: 500; font-size: 14px; background-color: #f1f5f9; color: #334155; border: none; cursor: pointer;">Reset</button>
+                <!-- Subject -->
+                <div class="flex flex-col gap-2">
+                    <label class="text-[#0f121a] text-base font-bold">Subject</label>
+                    <div class="relative">
+                        <select name="subject_id" id="subjectSelect" required onchange="onFilterChange()"
+                            class="w-full h-14 px-4 bg-[#f9f9fb] border-[#e9ebf2] rounded-xl text-[#0f121a] text-base font-medium focus:ring-[#1145d4] focus:border-[#1145d4]">
+                            <option value="">Select Subject</option>
+                            <?php foreach ($subjects as $subject): ?>
+                                <option value="<?php echo $subject->id; ?>" <?php echo $subject->id == $subjectId ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($subject->name); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Term -->
+                <div class="flex flex-col gap-2">
+                    <label class="text-[#0f121a] text-base font-bold">Term</label>
+                    <div class="relative">
+                        <select name="term_id" id="termSelect" required onchange="onFilterChange()"
+                            class="w-full h-14 px-4 bg-[#f9f9fb] border-[#e9ebf2] rounded-xl text-[#0f121a] text-base font-medium focus:ring-[#1145d4] focus:border-[#1145d4]">
+                            <option value="">Select Term</option>
+                            <?php foreach ($terms as $term): ?>
+                                <option value="<?php echo $term->id; ?>" <?php echo $term->id == $termId ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($term->name . ' - ' . ($term->school_year_name ?? '')); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Student Name -->
+                <div class="flex flex-col gap-2">
+                    <label class="text-[#0f121a] text-base font-bold">Student Name</label>
+                    <div class="relative">
+                        <select id="studentSelect" required onchange="onStudentSelect()"
+                            class="w-full h-14 px-4 bg-[#f9f9fb] border-[#e9ebf2] rounded-xl text-[#0f121a] text-base font-medium focus:ring-[#1145d4] focus:border-[#1145d4]">
+                            <option value="">Select Student</option>
+                            <!-- Populated via AJAX -->
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Score -->
+                <div class="flex flex-col gap-2">
+                    <label class="text-[#0f121a] text-base font-bold">Score (0-100)</label>
+                    <input type="number" name="scores[0][score]" id="scoreInput" min="0" max="100"
+                        placeholder="Enter Score" required
+                        class="w-full h-14 px-4 bg-[#f9f9fb] border-[#e9ebf2] rounded-xl text-[#0f121a] text-base font-medium placeholder:text-[#556591] focus:ring-[#1145d4] focus:border-[#1145d4]">
+                </div>
+
+                <!-- Remarks -->
+                <div class="flex flex-col gap-2">
+                    <label class="text-[#0f121a] text-base font-bold">Remarks</label>
+                    <textarea name="scores[0][remarks]" id="remarksInput" placeholder="Enter Remarks" rows="4"
+                        class="w-full p-4 bg-[#f9f9fb] border-[#e9ebf2] rounded-xl text-[#0f121a] text-base font-medium placeholder:text-[#556591] focus:ring-[#1145d4] focus:border-[#1145d4]"></textarea>
+                </div>
+
+                <!-- Action Button -->
+                <div class="flex justify-end mt-4">
+                    <button type="submit"
+                        class="flex min-w-[140px] h-12 px-6 items-center justify-center rounded-xl bg-[#1145d4] text-white text-base font-bold hover:bg-[#0e39af] transition-colors shadow-sm active:scale-95">
+                        Save Score
+                    </button>
+                </div>
+            </form>
+
+            <!-- Illustration Section -->
+            <div class="hidden lg:flex flex-1 justify-center items-start pt-10">
+                <div class="w-full max-w-[400px] h-auto aspect-[4/3] bg-center bg-no-repeat bg-cover rounded-2xl shadow-lg border border-[#e9ebf2]"
+                    style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC4KuUR2KlT8GwvrMMKR5sXPaf1jnvN228UNGIS_IL3kqcpqW6nTuAZMMaID_ggJowCveHqBjrcHcxhR0adYoLyNKQbkMzRWCAKd6C8y2wy1tYATE-nvfYhF0dHEbvzblPI8pPPq2ZqE9sz6BIyh_CNES3Zr0bT0FZHz6P5TvLRroaDEfHG1dVxzRvk3YrOO1u19RS02yPJIkG-tz2LZwXVUKUrJmTXXtO8RkeevJZUh_IzhbqSH-Jk-Q2qDb6_zVakHHfTdH_D_LM');">
                 </div>
             </div>
-        </form>
+        </div>
     </div>
 </div>
 
 <script>
-function loadStudents() {
-    const classId = document.getElementById('classSelect').value;
-    const termId = document.getElementById('termSelect').value;
-    const subjectId = document.getElementById('subjectSelect').value;
-    
-    if (!classId || !termId || !subjectId) {
-        alert('Please select class, term, and subject');
-        return;
-    }
-    
-    fetch(`index.php?controller=score&action=getStudents&class_id=${classId}&term_id=${termId}&subject_id=${subjectId}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.students && data.students.length > 0) {
-                const tbody = document.getElementById('studentsTableBody');
-                tbody.innerHTML = '';
-                
-                data.students.forEach((student, index) => {
-                    const row = document.createElement('tr');
-                    row.style.borderBottom = '1px solid #f1f5f9';
-                    row.innerHTML = `
-                        <td style="padding: 16px; color: #6366f1; font-weight: 500; font-size: 14px;">${student.admission_no}</td>
-                        <td style="padding: 16px; color: #1e293b; font-weight: 500; font-size: 14px;">${student.first_name} ${student.last_name}</td>
-                        <td style="padding: 16px;">
-                            <input type="hidden" name="scores[${index}][student_id]" value="${student.id}">
-                            <input type="hidden" name="scores[${index}][enrollment_id]" value="${student.enrollment_id}">
-                            <input type="number" name="scores[${index}][score]" 
-                                   style="width: 100%; max-width: 120px; padding: 8px 12px; border-radius: 6px; border: 1px solid #e2e8f0; background-color: #f1f5f9; font-size: 14px;"
-                                   min="0" max="100" value="${student.current_score || ''}" placeholder="0-100" required>
-                        </td>
-                        <td style="padding: 16px;">
-                            <input type="text" name="scores[${index}][remarks]" 
-                                   style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid #e2e8f0; background-color: #f1f5f9; font-size: 14px;"
-                                   value="${student.remarks || ''}" placeholder="Optional remarks">
-                        </td>
-                    `;
-                    tbody.appendChild(row);
-                });
-                
-                document.getElementById('studentsTable').style.display = 'block';
-            } else {
-                alert('No students found in this class');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error loading students. Please try again.');
-        });
-}
+    let studentsData = [];
 
-function resetForm() {
-    document.getElementById('scoreForm').reset();
-    document.getElementById('studentsTable').style.display = 'none';
-}
+    function onClassChange() {
+        const classId = document.getElementById('classSelect').value;
+        updateHeader();
+
+        // Fetch subjects for this class
+        if (classId) {
+            fetch(`index.php?controller=score&action=getSubjects&class_id=${classId}`)
+                .then(res => res.json())
+                .then(data => {
+                    const subSelect = document.getElementById('subjectSelect');
+                    subSelect.innerHTML = '<option value="">Select Subject</option>';
+                    if (data.subjects) {
+                        data.subjects.forEach(s => {
+                            subSelect.innerHTML += `<option value="${s.id}">${s.name}</option>`;
+                        });
+                    }
+                    onFilterChange();
+                });
+        } else {
+            document.getElementById('subjectSelect').innerHTML = '<option value="">Select Subject</option>';
+            onFilterChange();
+        }
+    }
+
+    function onFilterChange() {
+        updateHeader();
+        const classId = document.getElementById('classSelect').value;
+        const termId = document.getElementById('termSelect').value;
+        const subjectId = document.getElementById('subjectSelect').value;
+
+        const stuSelect = document.getElementById('studentSelect');
+        stuSelect.innerHTML = '<option value="">Select Student</option>';
+
+        if (classId && termId && subjectId) {
+            fetch(`index.php?controller=score&action=getStudents&class_id=${classId}&term_id=${termId}&subject_id=${subjectId}`)
+                .then(res => res.json())
+                .then(data => {
+                    studentsData = data.students || [];
+                    studentsData.forEach(s => {
+                        stuSelect.innerHTML += `<option value="${s.id}">${s.first_name} ${s.last_name}</option>`;
+                    });
+                });
+        }
+    }
+
+    function onStudentSelect() {
+        const studentId = document.getElementById('studentSelect').value;
+        const student = studentsData.find(s => s.id == studentId);
+
+        const scoreInput = document.getElementById('scoreInput');
+        const remarksInput = document.getElementById('remarksInput');
+        const enrollmentIdInput = document.getElementById('enrollmentIdInput');
+
+        if (student) {
+            scoreInput.value = student.current_score || '';
+            remarksInput.value = student.remarks || '';
+            enrollmentIdInput.value = student.enrollment_id;
+        } else {
+            scoreInput.value = '';
+            remarksInput.value = '';
+            enrollmentIdInput.value = '';
+        }
+    }
+
+    function updateHeader() {
+        const classText = document.getElementById('classSelect').options[document.getElementById('classSelect').selectedIndex].text;
+        const subjText = document.getElementById('subjectSelect').options[document.getElementById('subjectSelect').selectedIndex].text;
+
+        const display = (classText === 'Select Grade' ? 'Select Class' : classText) + ' | ' +
+            (subjText === 'Select Subject' ? 'Select Subject' : subjText);
+
+        document.getElementById('formHeaderDisplay').innerText = display;
+    }
+
+    // Initial load if pre-selected
+    window.onload = function () {
+        const classId = '<?php echo $classId; ?>';
+        if (classId) {
+            onFilterChange();
+        }
+    };
 </script>
