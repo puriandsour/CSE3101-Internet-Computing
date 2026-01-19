@@ -4,10 +4,10 @@
  * Run this file once to set up the database and tables.
  */
 
-$host = 'nozomi.proxy.rlwy.net:13165';
+$host = 'localhost';
 $username = 'root';
-$password = 'GnsMDFykCMBCOuviaulnNKvBUoBLMVmc'; // Default XAMPP password
-$dbname = 'railway';
+$password = ''; // Default XAMPP password
+$dbname = 'school_app';
 
 echo "<h1>School Management System Installation</h1>";
 
