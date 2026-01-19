@@ -30,6 +30,18 @@
         </form>
     </div>
 
+    <?php if (isset($_SESSION['success'])): ?>
+        <div style="padding: 12px 16px; background-color: #dcfce7; border: 1px solid #bbf7d0; border-radius: 8px; color: #166534; margin-bottom: 20px;">
+            <?php echo htmlspecialchars($_SESSION['success']); unset($_SESSION['success']); ?>
+        </div>
+    <?php endif; ?>
+
+    <?php if (isset($_SESSION['error'])): ?>
+        <div style="padding: 12px 16px; background-color: #fee2e2; border: 1px solid #fecaca; border-radius: 8px; color: #dc2626; margin-bottom: 20px;">
+            <?php echo htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?>
+        </div>
+    <?php endif; ?>
+
     <!-- Table Section -->
     <div class="card"
         style="padding: 0; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; background-color: #fff;">
@@ -40,12 +52,18 @@
                         ID</th>
                     <th style="padding: 16px; color: #64748b; font-size: 13px; font-weight: 600; text-transform: none;">
                         Full Name</th>
+                    <th style="padding: 16px; color: #64748b; font-size: 13px; font-weight: 600; text-transform: none;">
+                        Email</th>
+                    <th style="padding: 16px; color: #64748b; font-size: 13px; font-weight: 600; text-transform: none;">
+                        Status</th>
+                    <th style="padding: 16px; color: #64748b; font-size: 13px; font-weight: 600; text-transform: none;">
+                        Actions</th>
                 </tr>
             </thead>
             <tbody>
                 <?php if (empty($teachers)): ?>
                     <tr>
-                        <td colspan="2" style="padding: 48px; text-align: center; color: #94a3b8; font-size: 15px;">
+                        <td colspan="5" style="padding: 48px; text-align: center; color: #94a3b8; font-size: 15px;">
                             No teachers found matching your criteria.
                         </td>
                     </tr>
@@ -60,6 +78,27 @@
                             <td style="padding: 16px; color: #1e293b; font-weight: 500; font-size: 14px;">
                                 <?php echo htmlspecialchars($teacher->first_name . ' ' . $teacher->last_name); ?>
                             </td>
+                            <td style="padding: 16px; color: #64748b; font-size: 14px;">
+                                <?php echo htmlspecialchars($teacher->email ?? 'N/A'); ?>
+                            </td>
+                            <td style="padding: 16px;">
+                                <?php if ($teacher->is_active): ?>
+                                    <span style="padding: 4px 8px; background-color: #dcfce7; color: #16a34a; border-radius: 4px; font-size: 12px; font-weight: 500;">Active</span>
+                                <?php else: ?>
+                                    <span style="padding: 4px 8px; background-color: #fee2e2; color: #dc2626; border-radius: 4px; font-size: 12px; font-weight: 500;">Inactive</span>
+                                <?php endif; ?>
+                            </td>
+                            <td style="padding: 16px;">
+                                <a href="index.php?controller=user&action=edit&id=<?php echo $teacher->id; ?>" 
+                                   style="color: #2563eb; font-size: 13px; text-decoration: none; margin-right: 12px;">
+                                    ✏️ Edit
+                                </a>
+                                <a href="index.php?controller=user&action=delete&id=<?php echo $teacher->id; ?>" 
+                                   onclick="return confirm('Are you sure you want to delete this user?')"
+                                   style="color: #dc2626; font-size: 13px; text-decoration: none;">
+                                    🗑️ Delete
+                                </a>
+                            </td>
                         </tr>
                     <?php endforeach; ?>
                 <?php endif; ?>
@@ -71,7 +110,7 @@
 <script>
     // Simple debounce for search
     let searchTimeout = null;
-    document.querySelector('input[name="search"]').addEventListener('input', fun ction () {
+    document.querySelector('input[name="search"]').addEventListener('input', function () {
         clearTimeout(searchTimeout);
         searchTimeout = setTimeout(() => {
             this.form.submit();

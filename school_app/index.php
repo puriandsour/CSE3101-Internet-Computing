@@ -94,11 +94,17 @@ if ($role === 'OFFICE_ADMIN') {
             break;
         case 'user':
             $userController = new UserController();
-            if ($a === 'add')
+            if ($a === 'add') {
                 $userController->add();
-            elseif ($a === 'create')
+            } elseif ($a === 'create') {
                 $userController->create($_POST);
-            else {
+            } elseif ($a === 'edit') {
+                $userController->edit();
+            } elseif ($a === 'update') {
+                $userController->update();
+            } elseif ($a === 'delete') {
+                $userController->delete();
+            } else {
                 $userController->index();
             }
             break;
