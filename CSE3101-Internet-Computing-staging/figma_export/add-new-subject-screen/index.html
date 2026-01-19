@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="globals.css" />
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <section id="section-header">
+        <header class="app-header">
+            <div class="header-left">
+                <div class="logo-icon">
+                    <!-- merged image -->
+                    <div style="position: relative; width: 16px; height: 16px;">
+                        <img src="${ASSET_PATH}/29_6198.svg" alt="" style="position: absolute; top: 0; left: 0;" />
+                        <img src="${ASSET_PATH}/29_6199.svg" alt="" style="position: absolute; top: 0; left: 0;" />
+                    </div>
+                </div>
+                <span class="brand-name">EduTrack</span>
+            </div>
+
+            <div class="header-right">
+                <button class="notification-btn">
+                    <img src="${ASSET_PATH}/29_6208.svg" alt="Notifications" />
+                </button>
+                <div class="user-avatar">
+                    <img src="${ASSET_PATH}/b46401def05f0fc39327442da1c34c908d2bdc7c.png" alt="User Profile" />
+                </div>
+            </div>
+        </header>
+    </section>
+
+    <section id="section-main-body">
+        <div class="body-container">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="sidebar-content">
+                    <div class="sidebar-menu-group">
+                        <div class="sidebar-label">EduTrack</div>
+
+                        <nav class="sidebar-nav">
+                            <a href="#" class="nav-item">
+                                <img src="${ASSET_PATH}/29_6221.svg" alt="" class="nav-icon" />
+                                <span>Dashboard</span>
+                            </a>
+
+                            <a href="#" class="nav-item">
+                                <img src="${ASSET_PATH}/29_6228.svg" alt="" class="nav-icon" />
+                                <span>Students</span>
+                            </a>
+
+                            <a href="#" class="nav-item">
+                                <img src="${ASSET_PATH}/29_6235.svg" alt="" class="nav-icon" />
+                                <span>Teachers</span>
+                            </a>
+
+                            <a href="#" class="nav-item">
+                                <img src="${ASSET_PATH}/29_6242.svg" alt="" class="nav-icon" />
+                                <span>Classes</span>
+                            </a>
+
+                            <a href="#" class="nav-item active">
+                                <img src="${ASSET_PATH}/29_6249.svg" alt="" class="nav-icon" />
+                                <span>Subjects</span>
+                            </a>
+
+                            <a href="#" class="nav-item">
+                                <img src="${ASSET_PATH}/29_6256.svg" alt="" class="nav-icon" />
+                                <span>Settings</span>
+                            </a>
+                        </nav>
+                    </div>
+
+                    <div class="sidebar-footer">
+                        <button class="btn-new">
+                            <span class="plus-icon">+</span>
+                            <span>New</span>
+                        </button>
+
+                        <a href="#" class="help-link">
+                            <img src="${ASSET_PATH}/29_6268.svg" alt="" class="help-icon" />
+                            <span>Help and Docs</span>
+                        </a>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="main-content">
+                <div class="content-wrapper">
+                    <h1 class="page-title">Add New Subject</h1>
+
+                    <form class="subject-form">
+                        <!-- Grade Field -->
+                        <div class="form-group">
+                            <label class="form-label">Grade</label>
+                            <div class="custom-select-wrapper">
+                                <select class="custom-select-input">
+                                    <option value="" disabled selected hidden>Select Grade</option>
+                                    <option value="1">Grade 1</option>
+                                    <option value="2">Grade 2</option>
+                                </select>
+                                <div class="select-display">
+                                    <span>Select Grade</span>
+                                    <img src="${ASSET_PATH}/29_6434.svg" alt="chevron" class="chevron-icon" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Subject Name Field -->
+                        <div class="form-group">
+                            <label class="form-label">Subject Name</label>
+                            <div class="input-wrapper">
+                                <input type="text" placeholder="Enter Subject Name" class="form-input" />
+                            </div>
+                        </div>
+
+                        <!-- Subject Code Field -->
+                        <div class="form-group">
+                            <label class="form-label">Subject Code</label>
+                            <div class="input-wrapper">
+                                <input type="text" placeholder="Enter Subject Code (Optional)" class="form-input" />
+                            </div>
+                        </div>
+
+                        <!-- Active Toggle -->
+                        <div class="form-group toggle-group">
+                            <label class="form-label">Active</label>
+                            <div class="toggle-switch">
+                                <div class="toggle-track">
+                                    <div class="toggle-knob"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">Save Subject</button>
+                            <button type="button" class="btn-secondary">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </main>
+        </div>
+    </section>
+
+</body>
+
+</html>
