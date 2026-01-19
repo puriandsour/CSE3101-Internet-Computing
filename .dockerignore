@@ -1,0 +1,10 @@
+.git
+.gitignore
+*.zip
+*.sql
+README.md
+task.md
+.gemini
+figma_export
+database_dump.txt
+**/node_modules

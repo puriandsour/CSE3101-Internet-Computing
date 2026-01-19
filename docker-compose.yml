@@ -1,0 +1,12 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8080:80"
+    environment:
+      - DB_HOST=nozomi.proxy.rlwy.net:13165
+      - DB_NAME=railway
+      - DB_USER=root
+      - DB_PASS=GnsMDFykCMBCOuviaulnNKvBUoBLMVmc
+    volumes:
+      - .:/var/www/html

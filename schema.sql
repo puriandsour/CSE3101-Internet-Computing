@@ -18,8 +18,6 @@ DROP TABLE IF EXISTS roles;
 DROP TABLE IF EXISTS users;
 
 
---USERS / ROLES
--
 
 CREATE TABLE users (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -70,7 +68,7 @@ CREATE TABLE role_permissions (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
---SCHOOL STRUCTURE
+-- SCHOOL STRUCTURE
 
 
 CREATE TABLE grades (
@@ -112,7 +110,7 @@ CREATE TABLE subjects (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
---ACADEMIC YEAR / TERMS
+-- ACADEMIC YEAR / TERMS
 
 
 CREATE TABLE school_years (
@@ -146,7 +144,7 @@ CREATE TABLE terms (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
---STUDENTS ENROLLMENT
+-- STUDENTS ENROLLMENT
 
 
 CREATE TABLE students (
@@ -183,7 +181,7 @@ CREATE TABLE enrollments (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
---SCORES
+-- SCORES
 
 
 CREATE TABLE scores (
@@ -249,9 +247,11 @@ INSERT INTO grades (id, grade_number, name) VALUES
 
 INSERT INTO users (username, email, password_hash, first_name, last_name, is_active) VALUES
 -- Administrators
+
 ('admin', 'admin@school.com', '$2y$10$Smk12hWb6xEd/J96jxMhkuA6tCSUwWp4fugBO9iom6JTlMEssUkKa', 'System', 'Admin', 1),
 ('admin2', 'admin2@school.com', '$2y$10$Smk12hWb6xEd/J96jxMhkuA6tCSUwWp4fugBO9iom6JTlMEssUkKa', 'Jane', 'Smith', 1),
 -- Teachers
+
 ('teacher', 'teacher@school.com', '$2y$10$Smk12hWb6xEd/J96jxMhkuA6tCSUwWp4fugBO9iom6JTlMEssUkKa', 'John', 'Doe', 1),
 ('ms.williams', 'sarah.williams@school.com', '$2y$10$Smk12hWb6xEd/J96jxMhkuA6tCSUwWp4fugBO9iom6JTlMEssUkKa', 'Sarah', 'Williams', 1),
 ('mr.johnson', 'michael.johnson@school.com', '$2y$10$Smk12hWb6xEd/J96jxMhkuA6tCSUwWp4fugBO9iom6JTlMEssUkKa', 'Michael', 'Johnson', 1),
@@ -275,6 +275,7 @@ INSERT INTO users (username, email, password_hash, first_name, last_name, is_act
 ('mr.lopez', 'richard.lopez@school.com', '$2y$10$Smk12hWb6xEd/J96jxMhkuA6tCSUwWp4fugBO9iom6JTlMEssUkKa', 'Richard', 'Lopez', 1);
 
 -- Assign Roles
+
 INSERT INTO user_roles (user_id, role_id)
 SELECT u.id, r.id FROM users u, roles r 
 WHERE u.username = 'admin' AND r.name = 'OFFICE_ADMIN';
@@ -292,16 +293,19 @@ WHERE u.username IN ('teacher', 'ms.williams', 'mr.johnson', 'ms.davis', 'mr.bro
 
 
 -- Historical Years
+
 INSERT INTO school_years (name, start_date, end_date, is_current) VALUES
 ('2022-2023', '2022-09-01', '2023-06-30', 0),
 ('2023-2024', '2023-09-01', '2024-06-30', 0),
 ('2024-2025', '2024-09-01', '2025-06-30', 0);
 
 -- Current Year
+
 INSERT INTO school_years (name, start_date, end_date, is_current) VALUES
 ('2025-2026', '2025-09-01', '2026-06-30', 1);
 
 -- Terms for 2022-2023
+
 INSERT INTO terms (school_year_id, term_number, name, start_date, end_date)
 SELECT id, 1, 'Term 1', '2022-09-01', '2022-12-20' FROM school_years WHERE name = '2022-2023';
 INSERT INTO terms (school_year_id, term_number, name, start_date, end_date)
@@ -318,6 +322,7 @@ INSERT INTO terms (school_year_id, term_number, name, start_date, end_date)
 SELECT id, 3, 'Term 3', '2024-04-13', '2024-06-30' FROM school_years WHERE name = '2023-2024';
 
 -- Terms for 2024-2025
+
 INSERT INTO terms (school_year_id, term_number, name, start_date, end_date)
 SELECT id, 1, 'Term 1', '2024-09-01', '2024-12-20' FROM school_years WHERE name = '2024-2025';
 INSERT INTO terms (school_year_id, term_number, name, start_date, end_date)
@@ -326,6 +331,7 @@ INSERT INTO terms (school_year_id, term_number, name, start_date, end_date)
 SELECT id, 3, 'Term 3', '2025-04-13', '2025-06-30' FROM school_years WHERE name = '2024-2025';
 
 -- Terms for 2025-2026
+
 INSERT INTO terms (school_year_id, term_number, name, start_date, end_date)
 SELECT id, 1, 'Term 1', '2025-09-01', '2025-12-20' FROM school_years WHERE name = '2025-2026';
 
@@ -341,31 +347,37 @@ SELECT id, 3, 'Term 3', '2026-04-13', '2026-06-30' FROM school_years WHERE name 
 
 INSERT INTO classes (grade_id, name, room, is_active) VALUES
 -- Grade 1
+
 (1, 'A', 'Room 101', 1),
 (1, 'B', 'Room 102', 1),
 (1, 'C', 'Room 103', 1),
 (1, 'D', 'Room 104', 1),
 -- Grade 2
+
 (2, 'A', 'Room 201', 1),
 (2, 'B', 'Room 202', 1),
 (2, 'C', 'Room 203', 1),
 (2, 'D', 'Room 204', 1),
 -- Grade 3
+
 (3, 'A', 'Room 301', 1),
 (3, 'B', 'Room 302', 1),
 (3, 'C', 'Room 303', 1),
 (3, 'D', 'Room 304', 1),
 -- Grade 4
+
 (4, 'A', 'Room 401', 1),
 (4, 'B', 'Room 402', 1),
 (4, 'C', 'Room 403', 1),
 (4, 'D', 'Room 404', 1),
 -- Grade 5
+
 (5, 'A', 'Room 5A', 1),
 (5, 'B', 'Room 5B', 1),
 (5, 'C', 'Room 5C', 1),
 (5, 'D', 'Room 5D', 1),
 -- Grade 6
+
 (6, 'A', 'Room 6A', 1),
 (6, 'B', 'Room 6B', 1),
 (6, 'C', 'Room 6C', 1),
@@ -453,6 +465,7 @@ INSERT INTO subjects (grade_id, name, code, is_active) VALUES
 
 INSERT INTO students (admission_no, first_name, last_name, date_of_birth, gender, is_active) VALUES
 -- Grade 1 Students (30 students)
+
 ('1001', 'Liam', 'Carter', '2018-03-15', 'M', 1), ('1002', 'Olivia', 'Bennett', '2018-07-22', 'F', 1), ('1003', 'Noah', 'Thompson', '2018-11-08', 'M', 1),
 ('1004', 'Emma', 'Harper', '2018-05-30', 'F', 1), ('1005', 'Ethan', 'Parker', '2018-09-12', 'M', 1), ('1006', 'Ava', 'Mitchell', '2018-01-18', 'F', 1),
 ('1007', 'James', 'Wilson', '2018-02-14', 'M', 1), ('1008', 'Sophia', 'Martinez', '2018-06-20', 'F', 1), ('1009', 'Benjamin', 'Taylor', '2018-10-05', 'M', 1),
@@ -464,6 +477,7 @@ INSERT INTO students (admission_no, first_name, last_name, date_of_birth, gender
 ('1025', 'Henry', 'Young', '2018-01-09', 'M', 1), ('1026', 'Elizabeth', 'King', '2018-05-21', 'F', 1), ('1027', 'Andrew', 'Wright', '2018-09-04', 'M', 1),
 ('1028', 'Sofia', 'Lopez', '2018-03-26', 'F', 1), ('1029', 'Christopher', 'Hill', '2018-07-13', 'M', 1), ('1030', 'Avery', 'Scott', '2018-11-24', 'F', 1),
 -- Grade 2 Students (30 students)
+
 ('2001', 'Sophia', 'Anderson', '2017-04-25', 'F', 1), ('2002', 'Mason', 'White', '2017-08-14', 'M', 1), ('2003', 'Isabella', 'Harris', '2017-12-05', 'F', 1),
 ('2004', 'Logan', 'Clark', '2017-06-20', 'M', 1), ('2005', 'Emma', 'Robinson', '2017-10-11', 'F', 1), ('2006', 'Lucas', 'Rodriguez', '2017-02-18', 'M', 1),
 ('2007', 'Olivia', 'Lewis', '2017-05-29', 'F', 1), ('2008', 'Noah', 'Walker', '2017-09-07', 'M', 1), ('2009', 'Ava', 'Hall', '2017-01-16', 'F', 1),
@@ -475,6 +489,7 @@ INSERT INTO students (admission_no, first_name, last_name, date_of_birth, gender
 ('2025', 'Elizabeth', 'Turner', '2017-11-25', 'F', 1), ('2026', 'Henry', 'Phillips', '2017-03-06', 'M', 1), ('2027', 'Sofia', 'Campbell', '2017-07-19', 'F', 1),
 ('2028', 'Andrew', 'Parker', '2017-10-30', 'M', 1), ('2029', 'Avery', 'Evans', '2017-02-08', 'F', 1), ('2030', 'Christopher', 'Edwards', '2017-06-21', 'M', 1),
 -- Grade 3 Students (30 students)
+
 ('3001', 'Mia', 'Lewis', '2016-02-10', 'F', 1), ('3002', 'Lucas', 'Robinson', '2016-10-28', 'M', 1), ('3003', 'Amelia', 'Walker', '2016-07-03', 'F', 1),
 ('3004', 'Henry', 'Young', '2016-03-17', 'M', 1), ('3005', 'Charlotte', 'King', '2016-11-24', 'F', 1), ('3006', 'Alexander', 'Wright', '2016-05-08', 'M', 1),
 ('3007', 'Harper', 'Lopez', '2016-09-19', 'F', 1), ('3008', 'Benjamin', 'Hill', '2016-01-26', 'M', 1), ('3009', 'Evelyn', 'Scott', '2016-08-12', 'F', 1),
@@ -486,6 +501,7 @@ INSERT INTO students (admission_no, first_name, last_name, date_of_birth, gender
 ('3025', 'Ryan', 'Stewart', '2016-10-23', 'M', 1), ('3026', 'Chloe', 'Sanchez', '2016-02-04', 'F', 1), ('3027', 'Nathan', 'Morris', '2016-09-13', 'M', 1),
 ('3028', 'Zoe', 'Rogers', '2016-05-30', 'F', 1), ('3029', 'Tyler', 'Reed', '2016-11-08', 'M', 1), ('3030', 'Natalie', 'Cook', '2016-07-19', 'F', 1),
 -- Grade 4 Students (30 students)
+
 ('4001', 'Charlotte', 'King', '2015-09-21', 'F', 1), ('4002', 'Alexander', 'Wright', '2015-01-14', 'M', 1), ('4003', 'Harper', 'Lopez', '2015-11-08', 'F', 1),
 ('4004', 'Benjamin', 'Hill', '2015-05-02', 'M', 1), ('4005', 'Evelyn', 'Scott', '2015-08-16', 'F', 1), ('4006', 'Daniel', 'Green', '2015-02-27', 'M', 1),
 ('4007', 'Abigail', 'Adams', '2015-12-03', 'F', 1), ('4008', 'Matthew', 'Baker', '2015-06-14', 'M', 1), ('4009', 'Emily', 'Nelson', '2015-10-25', 'F', 1),
@@ -497,6 +513,7 @@ INSERT INTO students (admission_no, first_name, last_name, date_of_birth, gender
 ('4025', 'Tyler', 'Reed', '2015-10-22', 'M', 1), ('4026', 'Natalie', 'Cook', '2015-04-03', 'F', 1), ('4027', 'Brandon', 'Morgan', '2015-08-14', 'M', 1),
 ('4028', 'Hannah', 'Bell', '2015-12-25', 'F', 1), ('4029', 'Justin', 'Murphy', '2015-07-06', 'M', 1), ('4030', 'Victoria', 'Bailey', '2015-03-17', 'F', 1),
 -- Grade 5 Students (30 students)
+
 ('5001', 'Liam', 'Carter', '2014-08-19', 'M', 1), ('5002', 'Olivia', 'Bennett', '2014-12-11', 'F', 1), ('5003', 'Noah', 'Thompson', '2014-04-27', 'M', 1),
 ('5004', 'Emma', 'Harper', '2014-06-15', 'F', 1), ('5005', 'Ethan', 'Parker', '2014-10-03', 'M', 1), ('5006', 'Ava', 'Mitchell', '2014-02-14', 'F', 1),
 ('5007', 'James', 'Wilson', '2014-11-25', 'M', 1), ('5008', 'Sophia', 'Martinez', '2014-05-07', 'F', 1), ('5009', 'Benjamin', 'Taylor', '2014-09-18', 'M', 1),
@@ -508,6 +525,7 @@ INSERT INTO students (admission_no, first_name, last_name, date_of_birth, gender
 ('5025', 'Henry', 'Young', '2014-12-14', 'M', 1), ('5026', 'Elizabeth', 'King', '2014-06-25', 'F', 1), ('5027', 'Andrew', 'Wright', '2014-10-06', 'M', 1),
 ('5028', 'Sofia', 'Lopez', '2014-02-17', 'F', 1), ('5029', 'Christopher', 'Hill', '2014-11-28', 'M', 1), ('5030', 'Avery', 'Scott', '2014-05-09', 'F', 1),
 -- Grade 6 Students (30 students)
+
 ('6001', 'Ava', 'Mitchell', '2013-02-22', 'F', 1), ('6002', 'Lucas', 'Foster', '2013-07-30', 'M', 1), ('6003', 'Sophia', 'Gonzalez', '2013-09-14', 'F', 1),
 ('6004', 'Mason', 'Nelson', '2013-01-08', 'M', 1), ('6005', 'Isabella', 'Baker', '2013-11-25', 'F', 1), ('6006', 'Logan', 'Hall', '2013-04-16', 'M', 1),
 ('6007', 'Mia', 'Adams', '2013-08-29', 'F', 1), ('6008', 'James', 'Carter', '2013-12-10', 'M', 1), ('6009', 'Charlotte', 'Perez', '2013-06-21', 'F', 1),
@@ -627,6 +645,7 @@ WHERE s.admission_no LIKE '6%'
 
 
 -- Scores for 2025-2026 - Term 1 (All students, all subjects)
+
 INSERT INTO scores (enrollment_id, subject_id, term_id, teacher_user_id, score, remarks)
 SELECT 
   e.id,
@@ -647,6 +666,7 @@ JOIN terms t ON t.school_year_id = e.school_year_id AND t.term_number = 1
 WHERE e.school_year_id = (SELECT id FROM school_years WHERE name = '2025-2026');
 
 -- Scores for 2025-2026 - Term 2
+
 INSERT INTO scores (enrollment_id, subject_id, term_id, teacher_user_id, score, remarks)
 SELECT 
   e.id,
@@ -667,6 +687,7 @@ JOIN terms t ON t.school_year_id = e.school_year_id AND t.term_number = 2
 WHERE e.school_year_id = (SELECT id FROM school_years WHERE name = '2025-2026');
 
 -- Scores for 2025-2026 - Term 3 (67% coverage - ongoing term)
+
 INSERT INTO scores (enrollment_id, subject_id, term_id, teacher_user_id, score, remarks)
 SELECT 
   e.id,
@@ -688,6 +709,7 @@ WHERE e.school_year_id = (SELECT id FROM school_years WHERE name = '2025-2026')
   AND (e.id % 3) != 2;
 
 -- Scores for 2024-2025 - All Terms (Historical data)
+
 INSERT INTO scores (enrollment_id, subject_id, term_id, teacher_user_id, score, remarks)
 SELECT 
   e.id,
@@ -708,6 +730,7 @@ JOIN terms t ON t.school_year_id = e.school_year_id
 WHERE e.school_year_id = (SELECT id FROM school_years WHERE name = '2024-2025');
 
 -- Scores for 2023-2024 - All Terms (Historical data)
+
 INSERT INTO scores (enrollment_id, subject_id, term_id, teacher_user_id, score, remarks)
 SELECT 
   e.id,
@@ -729,6 +752,7 @@ WHERE e.school_year_id = (SELECT id FROM school_years WHERE name = '2023-2024')
   AND (e.id % 2) = 0;  -- 50% coverage for older data
 
 -- Scores for 2022-2023 - All Terms (Historical data - limited)
+
 INSERT INTO scores (enrollment_id, subject_id, term_id, teacher_user_id, score, remarks)
 SELECT 
   e.id,
@@ -750,6 +774,7 @@ WHERE e.school_year_id = (SELECT id FROM school_years WHERE name = '2022-2023')
   AND (e.id % 3) = 0;  -- 33% coverage for oldest data
 
 -- High-performing student: Grade 5, Student 5001 (Liam Carter) - Math scores
+
 INSERT INTO scores (enrollment_id, subject_id, term_id, teacher_user_id, score, remarks)
 SELECT 
   e.id,
@@ -768,6 +793,7 @@ WHERE s.admission_no = '5001'
 ON DUPLICATE KEY UPDATE score = 95.00, remarks = 'Outstanding performance!';
 
 -- Another high-performer: Grade 6, Student 6001 (Ava Mitchell) - English
+
 INSERT INTO scores (enrollment_id, subject_id, term_id, teacher_user_id, score, remarks)
 SELECT 
   e.id,
