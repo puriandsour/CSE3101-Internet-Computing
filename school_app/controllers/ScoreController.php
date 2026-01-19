@@ -30,8 +30,8 @@ class ScoreController
         $stmt->execute([$schoolYearId]);
         $classes = $stmt->fetchAll(PDO::FETCH_OBJ);
 
-        // 3. Get terms for THIS year only
-        $terms = Term::getBySchoolYear($schoolYearId);
+        // 3. Get terms for THIS year only (Using getAll to include school year name)
+        $terms = Term::getAll(['school_year_id' => $schoolYearId]);
 
         $selectedClassId = $_GET['class_id'] ?? null;
         $selectedTermId = $_GET['term_id'] ?? null;

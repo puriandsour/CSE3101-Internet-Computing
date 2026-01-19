@@ -31,7 +31,7 @@
 
             <h2 class="text-[#0e121b] text-lg font-bold">Filters</h2>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Class -->
                 <div class="flex flex-col gap-2">
                     <label class="text-[#0e121b] text-sm font-bold">Grade</label>
@@ -43,17 +43,6 @@
                                 <?php echo htmlspecialchars($class->grade_name . ' - ' . $class->name); ?>
                             </option>
                         <?php endforeach; ?>
-                    </select>
-                </div>
-
-                <!-- Subject (Static Label in design but we use filters) -->
-                <div class="flex flex-col gap-2">
-                    <label class="text-[#0e121b] text-sm font-bold">Subject</label>
-                    <select
-                        class="w-full h-14 px-4 bg-[#f9f9fb] border-[#e9ebf2] rounded-xl text-[#0e121b] text-base font-medium">
-                        <option>Select Subject</option>
-                        <option>Mathematics</option>
-                        <option>Science</option>
                     </select>
                 </div>
 
@@ -86,23 +75,22 @@
                 </div>
 
                 <!-- Bar Chart -->
-                <div class="flex items-end gap-10 min-h-[250px] px-4 pb-10 border-b border-[#f1f3f7]">
+                <div class="flex items-end gap-x-12 min-h-[300px] px-8 pb-12 border-b border-[#f1f3f7] mt-4">
                     <?php if (!empty($subjects)): ?>
                         <?php foreach ($subjects as $s): ?>
-                            <div class="flex-1 flex flex-col items-center gap-4">
+                            <div class="flex-1 flex flex-col items-center gap-4 h-full justify-end">
+                                <!-- Score Label -->
+                                <span class="text-[#0e121b] text-sm font-bold"><?php echo round($s->avg_score, 1); ?></span>
+
                                 <!-- Bar -->
-                                <div class="w-full bg-[#f1f4ff] rounded-t-lg relative group transition-all"
-                                    style="height: <?php echo max(10, $s->avg_score); ?>%;">
-                                    <div
-                                        class="absolute -top-8 left-1/2 -translate-x-1/2 bg-[#195de6] text-white text-[10px] font-bold px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <?php echo round($s->avg_score, 1); ?>
-                                    </div>
-                                    <div class="w-full h-full bg-[#e9ebf2] group-hover:bg-[#195de6] transition-colors rounded-t-lg">
-                                    </div>
+                                <div class="w-16 bg-[#195de6] rounded-t-lg transition-all shadow-sm"
+                                    style="height: <?php echo max(5, ($s->avg_score / 100) * 200); ?>px;">
                                 </div>
-                                <!-- Label -->
-                                <span
-                                    class="text-[#4e6797] text-[13px] font-bold tracking-wider"><?php echo htmlspecialchars($s->name); ?></span>
+
+                                <!-- Subject Label -->
+                                <span class="text-[#4e6797] text-[13px] font-bold tracking-wider text-center max-w-[100px]">
+                                    <?php echo htmlspecialchars($s->name); ?>
+                                </span>
                             </div>
                         <?php endforeach; ?>
                     <?php else: ?>

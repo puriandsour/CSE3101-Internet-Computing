@@ -46,7 +46,7 @@ class ReportController
         if ($classId && $termId) {
             $class = ClassModel::find($classId);
             if ($class) {
-                // Get subjects for this grade with averages for THIS class
+                // Get subjects for this grade with averages for the ENTIRE GRADE
                 $stmt = $db->prepare("
                     SELECT 
                         s.id, s.name,
@@ -56,22 +56,24 @@ class ReportController
                         SELECT sc.subject_id, AVG(sc.score) as avg_score
                         FROM scores sc
                         JOIN enrollments e ON sc.enrollment_id = e.id
-                        WHERE sc.term_id = ? AND e.class_id = ?
+                        JOIN classes c ON e.class_id = c.id
+                        WHERE sc.term_id = ? AND c.grade_id = ?
                         GROUP BY sc.subject_id
                     ) sub_avg ON s.id = sub_avg.subject_id
                     WHERE s.grade_id = ? AND s.is_active = 1
                 ");
-                $stmt->execute([$termId, $classId, $class->grade_id]);
+                $stmt->execute([$termId, $class->grade_id, $class->grade_id]);
                 $subjects = $stmt->fetchAll(PDO::FETCH_OBJ);
 
-                // Overall average
+                // Overall average for the ENTIRE GRADE
                 $scoresStmt = $db->prepare("
                     SELECT AVG(sc.score) as avg
                     FROM scores sc
                     JOIN enrollments e ON sc.enrollment_id = e.id
-                    WHERE e.class_id = ? AND sc.term_id = ?
+                    JOIN classes c ON e.class_id = c.id
+                    WHERE c.grade_id = ? AND sc.term_id = ?
                 ");
-                $scoresStmt->execute([$classId, $termId]);
+                $scoresStmt->execute([$class->grade_id, $termId]);
                 $overallAverage = round($scoresStmt->fetch(PDO::FETCH_OBJ)->avg ?? 0, 1);
             }
         }
