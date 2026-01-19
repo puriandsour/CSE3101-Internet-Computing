@@ -1,1 +1,0 @@
-<h1>Quick Actions</h1>

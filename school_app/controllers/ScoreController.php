@@ -1,53 +1,149 @@
 <?php
 require_once __DIR__ . '/../models/Score.php';
-require_once __DIR__ . '/../models/Student.php';
+require_once __DIR__ . '/../models/ClassModel.php';
+require_once __DIR__ . '/../models/Term.php';
 require_once __DIR__ . '/../models/Subject.php';
+require_once __DIR__ . '/../models/Student.php';
+require_once __DIR__ . '/../models/Enrollment.php';
 
-class ScoreController
-{
-
-    public function add($data)
-    {
-        // Score::add expects a single array argument with keys:
-        // enrollment_id, subject_id, term_id, teacher_user_id, score, remarks
-
-        $scoreData = [
-            'enrollment_id' => $data['enrollment_id'], // Ensure form sends enrollment_id, not student_id directly?
-            // Wait, usually forms send student_id. We need to look up enrollment.
-            // But let's assume for now the form logic will handle resolving enrollment_id or we do it here.
-
-            // If the View sends student_id, we must find the active enrollment!
-            'subject_id' => $data['subject_id'],
-            'term_id' => $data['term_id'],
-            'teacher_user_id' => $_SESSION['user_id'], // Get from Session
-            'score' => $data['score'],
-            'remarks' => $data['remarks'] ?? null
+class ScoreController {
+    
+    public function enter() {
+        $classes = ClassModel::getAll();
+        $terms = Term::getAll();
+        $subjects = Subject::getAll();
+        
+        return [
+            'classes' => $classes,
+            'terms' => $terms,
+            'subjects' => $subjects
         ];
-
-        // Resolving Enrollment ID if not present but student_id is
-        if (!isset($data['enrollment_id']) && isset($data['student_id'])) {
-            $studentModel = new Student();
-            $enrollment = $studentModel->getCurrentEnrollment($data['student_id']);
-            if ($enrollment) {
-                $scoreData['enrollment_id'] = $enrollment->id;
-            } else {
-                $GLOBALS['error'] = "Student is not enrolled in the current year.";
-                return false;
+    }
+    
+    public function manage() {
+        // Just render the manage view - data loaded in view
+    }
+    
+    public function getStudents() {
+        header('Content-Type: application/json');
+        
+        $classId = $_GET['class_id'] ?? null;
+        $termId = $_GET['term_id'] ?? null;
+        $subjectId = $_GET['subject_id'] ?? null;
+        
+        if (!$classId || !$termId || !$subjectId) {
+            echo json_encode(['error' => 'Missing parameters']);
+            exit;
+        }
+        
+        $db = Database::connect();
+        $stmt = $db->prepare("
+            SELECT 
+                s.*,
+                e.id as enrollment_id,
+                sc.score as current_score,
+                sc.remarks
+            FROM students s
+            JOIN enrollments e ON s.id = e.student_id
+            LEFT JOIN scores sc ON e.id = sc.enrollment_id 
+                AND sc.subject_id = ? 
+                AND sc.term_id = ?
+            WHERE e.class_id = ? 
+                AND e.status = 'ACTIVE'
+                AND s.is_active = 1
+            ORDER BY s.admission_no
+        ");
+        
+        $stmt->execute([$subjectId, $termId, $classId]);
+        $students = $stmt->fetchAll(PDO::FETCH_OBJ);
+        
+        echo json_encode(['students' => $students]);
+        exit;
+    }
+    
+    public function save() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header("Location: index.php?controller=score&action=enter");
+            exit;
+        }
+        
+        $classId = $_POST['class_id'] ?? null;
+        $termId = $_POST['term_id'] ?? null;
+        $subjectId = $_POST['subject_id'] ?? null;
+        $scores = $_POST['scores'] ?? [];
+        
+        if (!$classId || !$termId || !$subjectId || empty($scores)) {
+            $_SESSION['error'] = "Please fill all required fields.";
+            header("Location: index.php?controller=score&action=enter");
+            exit;
+        }
+        
+        $teacherId = $_SESSION['user_id'];
+        $db = Database::connect();
+        $saved = 0;
+        
+        foreach ($scores as $scoreData) {
+            if (empty($scoreData['score']) || $scoreData['score'] < 0 || $scoreData['score'] > 100) {
+                continue;
             }
+            
+            $checkStmt = $db->prepare("
+                SELECT id FROM scores 
+                WHERE enrollment_id = ? AND subject_id = ? AND term_id = ?
+            ");
+            $checkStmt->execute([
+                $scoreData['enrollment_id'],
+                $subjectId,
+                $termId
+            ]);
+            
+            if ($existing = $checkStmt->fetch(PDO::FETCH_OBJ)) {
+                $updateStmt = $db->prepare("
+                    UPDATE scores 
+                    SET score = ?, remarks = ?, teacher_user_id = ?, updated_at = NOW()
+                    WHERE id = ?
+                ");
+                $updateStmt->execute([
+                    $scoreData['score'],
+                    $scoreData['remarks'] ?? null,
+                    $teacherId,
+                    $existing->id
+                ]);
+            } else {
+                $insertStmt = $db->prepare("
+                    INSERT INTO scores (enrollment_id, subject_id, term_id, teacher_user_id, score, remarks, created_at)
+                    VALUES (?, ?, ?, ?, ?, ?, NOW())
+                ");
+                $insertStmt->execute([
+                    $scoreData['enrollment_id'],
+                    $subjectId,
+                    $termId,
+                    $teacherId,
+                    $scoreData['score'],
+                    $scoreData['remarks'] ?? null
+                ]);
+            }
+            
+            $saved++;
         }
-
-        // Add score
-        $scoreModel = new Score();
-        $success = $scoreModel->add($scoreData);
-
-        if ($success) {
-            $GLOBALS['success'] = "Score added successfully!";
+        
+        if ($saved > 0) {
+            $_SESSION['success'] = "$saved score(s) saved successfully!";
+        } else {
+            $_SESSION['error'] = "No valid scores to save.";
         }
-
-        // Error handling is done inside Score::add setting $_SESSION['error'] usually, 
-        // but here we used $GLOBALS in previous code. Let's stick to consistent Session usage if possible.
-        // But the previous code used $GLOBALS.
-
-        return $success;
+        
+        header("Location: index.php?controller=score&action=enter");
+        exit;
+    }
+    
+    public function delete($id) {
+        $db = Database::connect();
+        $stmt = $db->prepare("DELETE FROM scores WHERE id = ?");
+        $stmt->execute([$id]);
+        
+        $_SESSION['success'] = "Score deleted successfully!";
+        header("Location: index.php?controller=score&action=manage");
+        exit;
     }
 }

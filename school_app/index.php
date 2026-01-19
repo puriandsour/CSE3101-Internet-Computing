@@ -19,6 +19,9 @@ require_once 'controllers/TermController.php';
 require_once 'controllers/AdminController.php';
 require_once 'controllers/SchoolYearController.php';
 
+// Models
+require_once 'models/Report.php';
+
 // --- VIEW HELPER ---
 function render_view($viewPath, $data = [])
 {
@@ -187,20 +190,49 @@ if ($role === 'OFFICE_ADMIN') {
 } elseif ($role === 'TEACHER') {
     switch ($c) {
         case 'teacher':
-            if ($a === 'dashboard')
-                render_view('views/teacher/dashboard.php');
-            elseif ($a === 'classes')
-                render_view('views/teacher/classes.php');
+            $teacherController = new TeacherController();
+            if ($a === 'dashboard') {
+                $data = $teacherController->dashboard();
+                render_view('views/teacher/dashboard.php', $data);
+            } elseif ($a === 'classes') {
+                $data = $teacherController->classes();
+                render_view('views/teacher/classes.php', $data);
+            } elseif ($a === 'viewClass') {
+                $data = $teacherController->viewClass($_GET['id'] ?? null);
+                render_view('views/teacher/viewClass.php', $data);
+            } elseif ($a === 'getClassStudents') {
+                $teacherController->getClassStudents();
+            }
             break;
         case 'score':
-            if ($a === 'enter')
-                render_view('views/teacher/scores/enter.php');
+            $scoreController = new ScoreController();
+            if ($a === 'enter') {
+                $data = $scoreController->enter();
+                render_view('views/teacher/scores/enter.php', $data);
+            } elseif ($a === 'manage') {
+                $scoreController->manage();
+                render_view('views/teacher/scores/manage.php');
+            } elseif ($a === 'getStudents') {
+                $scoreController->getStudents();
+            } elseif ($a === 'save') {
+                $scoreController->save();
+            } elseif ($a === 'delete') {
+                $scoreController->delete($_GET['id'] ?? null);
+            }
             break;
         case 'report':
-            if ($a === 'index')
-                render_view('views/teacher/reports/index.php');
-            elseif ($a === 'generate')
-                render_view('views/teacher/reports/generate.php');
+            $reportController = new ReportController();
+            if ($a === 'index') {
+                $data = $reportController->index();
+                render_view('views/teacher/reports/index.php', $data);
+            } elseif ($a === 'generate') {
+                $data = $reportController->generate();
+                render_view('views/teacher/reports/generate.php', $data);
+            } elseif ($a === 'create') {
+                $reportController->create($_POST);
+            } elseif ($a === 'view') {
+                render_view('views/teacher/reports/view.php');
+            }
             break;
         case 'profile':
             $p = new ProfileController();
